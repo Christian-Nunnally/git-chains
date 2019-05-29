@@ -10,8 +10,8 @@ class NodeColor:
         init(autoreset=True)
         self.node = node
         if (node.is_reference_node):
-            self.color = Fore.GREEN + Style.BRIGHT
+            self.color = Fore.YELLOW + Style.BRIGHT
         elif (node.children):
-            self.color = Fore.YELLOW + Style.NORMAL
+            self.color = Fore.GREEN + Style.NORMAL
         else:
             self.color = Fore.BLUE + Style.NORMAL
