@@ -6,12 +6,12 @@ class ChainHierarchyPrinter:
     def __init__(self, tree, master_log):
         self.no_vertical_white_space = True
         self.single_line_vertical_white_space = False
-        self.exclude_nodes_with_one_child = False
+        self.exclude_nodes_with_one_child = True
         self.verbose_branch_names = False
         self.show_omitted_parents = True
         self.show_reference_nodes = False
         self.always_print_nodes_with_names = True
-        self.align_left = True
+        self.align_left = False
         self.horizontial_spaces = 3
         self.commit_style = '●'
         self.tree = tree
@@ -51,7 +51,7 @@ class ChainHierarchyPrinter:
         line = color.color + self.commit_style + color.reset + line
 
         if (omitted_parent and self.show_omitted_parents):
-            line = color.color + '◌' + color.reset + line
+            line = color.omitted_parent + '◌' + color.reset + line
         else:
             line = '─' + line
 

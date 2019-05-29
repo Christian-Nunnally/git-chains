@@ -1,8 +1,15 @@
 from colorama import *
 from CommitNode import CommitNode
 
+# Colors are ☣
+# BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE, RESET
+# Styles are
+# NORMAL, BRIGHT
+# everythnig else is not supported in Windows.
+
 class NodeColor:
     node = None
+    omitted_parent = Fore.CYAN + Style.BRIGHT
     color = Fore.RED
     reset = Fore.RESET
 
