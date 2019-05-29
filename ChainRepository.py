@@ -1,5 +1,4 @@
 from pygit2 import *
-from Printer import Printer
 from ChainHierarchyPrinter import ChainHierarchyPrinter
 from CommitNode import CommitNode
 from CommitTree import CommitTree

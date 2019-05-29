@@ -1,8 +1,7 @@
-from Printer import Printer
 from CommitTree import CommitTree
 import os
 
-class ChainHierarchyPrinter(Printer):
+class ChainHierarchyPrinter:
     def __init__(self, tree, master_log):
         self.no_vertical_white_space = True
         self.single_line_vertical_white_space = False
