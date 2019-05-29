@@ -12,6 +12,6 @@ class NodeColor:
         if (node.is_reference_node):
             self.color = Fore.YELLOW + Style.BRIGHT
         elif (node.children):
-            self.color = Fore.GREEN + Style.BRIGHT
+            self.color = Fore.GREEN + Style.NORMAL
         else:
-            self.color = Fore.BLUE + Style.BRIGHT
+            self.color = Fore.BLUE + Style.NORMAL
