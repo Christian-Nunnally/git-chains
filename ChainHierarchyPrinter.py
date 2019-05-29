@@ -1,5 +1,6 @@
 from Printer import Printer
 from CommitTree import CommitTree
+from NodeColor import NodeColor
 import os
 
 class ChainHierarchyPrinter(Printer):

@@ -1,8 +1,8 @@
 from pygit2 import *
 from ChainRepository import ChainRepository
 
-local_repo_name = "C:\ASW\.git"
-master_branch_name = "master"
+local_repo_name = "C:\\Users\\bhealy\\source\\repos\\ASW\\.git"
+master_branch_name = "users/bhealy/sketch/2"
 repo = Repository(local_repo_name)
 
 def __main__():
