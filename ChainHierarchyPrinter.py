@@ -158,7 +158,7 @@ class ChainHierarchyPrinter:
                             self.replace_char_in_line(text_list, line_number, char_number, '┐')
 
     def replace_char_in_line(self, text_list, line_index, char_index, char):
-        text_list[line_number] = text_list[line_index][char_index - 1:] + char + text_list[line_index][:char_index]
+        text_list[line_index] = text_list[line_index][char_index - 1:] + char + text_list[line_index][:char_index]
 
     def add_header_to_text_list(self, text_list):
         text_list.insert(0, '.')
