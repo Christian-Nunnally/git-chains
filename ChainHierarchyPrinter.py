@@ -5,13 +5,13 @@ import os
 class ChainHierarchyPrinter:
     def __init__(self, chain_repo):
         self.no_vertical_white_space = False
-        self.single_line_vertical_white_space = True
+        self.vertical_white_space_between_chains_off_master = True
         self.exclude_nodes_with_one_child = True
         self.verbose_branch_names = False
-        self.show_omitted_parents = True
         self.show_reference_nodes = False
         self.always_print_nodes_with_names = True
-        self.align_left = True
+        self.show_individual_obmitted_parents = True
+        self.align_left = False
         self.horizontial_spaces = 3
         self.commit_style = '●'
         self.parent_style = '◌'
@@ -28,19 +28,17 @@ class ChainHierarchyPrinter:
     def build_text_list(self):
         text_list = []
         start_node = self.tree.root
-        self.build_list_from_node_recursively(start_node, text_list, 0, False)
+        self.build_text_list_recursively(start_node, text_list, 0, False)
         return text_list
 
-    def build_list_from_node_recursively(self, node, text_list, left_spaces, omitted_parent):
-        if (not (self.always_print_nodes_with_names and node.has_name)):
-            if (not (self.show_reference_nodes and node.is_reference_node)):
-                if self.exclude_nodes_with_one_child and len(node.children) == 1:
-                    self.build_list_from_node_recursively(node.children[0], text_list, left_spaces, True)
-                    return
+    def build_text_list_recursively(self, node, text_list, left_spaces, omitted_parents):
+        if self.should_skip_over_node(node):
+            self.build_text_list_recursively(node.children[0], text_list, left_spaces, omitted_parents + 1)
+            return
 
         sorted_children = self.sorted_children(node.children)
 
-        pretty_name = str(node.pretty_name)
+        pretty_name = node.pretty_name
         if (not self.verbose_branch_names):
             pretty_name = os.path.basename(pretty_name)
         color = NodeColor(node)
@@ -52,8 +50,10 @@ class ChainHierarchyPrinter:
 
         line = color.status_color + self.commit_style + color.reset + line
 
-        if (omitted_parent and self.show_omitted_parents):
-            line = color.omitted_parent + self.parent_style + color.reset + line
+        if (omitted_parents > 0):
+            if (not self.show_individual_obmitted_parents):
+                omitted_parents = 1
+            line = color.omitted_parent + (self.parent_style * omitted_parents) + color.reset + line
         else:
             line = '─' + line
 
@@ -61,7 +61,6 @@ class ChainHierarchyPrinter:
             line = '─' + line
 
         line = '└' + line
-
         for i in range(left_spaces):
             line = ' ' + line
             
@@ -69,13 +68,20 @@ class ChainHierarchyPrinter:
 
         sorted_children = self.sorted_children(node.children)
         for child in sorted_children:
-            self.build_list_from_node_recursively(child, text_list, left_spaces + self.horizontial_spaces, False)
+            self.build_text_list_recursively(child, text_list, left_spaces + self.horizontial_spaces, 0)
         
-        if (not self.no_vertical_white_space):
-            if (self.single_line_vertical_white_space):
-                if (len(text_list) > 0 and not len(text_list[-1]) == 0):
-                    text_list.append('')
-            else:
+        self.add_vertical_whitespace_if_needed(text_list)
+
+    def should_skip_over_node(self, node):
+        if self.always_print_nodes_with_names and node.has_name:
+            return False
+        if self.show_reference_nodes and node.is_reference_node:
+            return False
+        return self.exclude_nodes_with_one_child and len(node.children) == 1
+
+    def add_vertical_whitespace_if_needed(self, text_list):
+        if (self.vertical_white_space_between_chains_off_master):
+            if (len(text_list) > 0 and not len(text_list[-1]) == 0):
                 text_list.append('')
 
     def sorted_children(self, children):
@@ -96,18 +102,15 @@ class ChainHierarchyPrinter:
         self.remove_tailing_whitespace(text_list)
 
     def inline_left_commits(self, text_list):
-        for line_number in range(len(text_list) * 2):
-            if (line_number >= len(text_list) - 1):
+        line_number = 0
+        while(True):
+            if (line_number >= len(text_list) - 3):
                 break
-            line = text_list[line_number]
-            for i in range(len(line) - 1):
-                char = line[i]
-                if (char == '└'):
-                    self.remove_leading_spaces(text_list, line_number + 1, self.horizontial_spaces)
-                    text_list.insert(line_number + 1, '┌' + ('─' * (self.horizontial_spaces - 1)) +  '┘')
-                    break
-                else:
-                    break
+            line_number += 1
+            if (text_list[line_number][0] == '└'):
+                self.remove_leading_spaces(text_list, line_number + 1, self.horizontial_spaces)
+                text_list.insert(line_number + 1, '┌' + ('─' * (self.horizontial_spaces - 1)) +  '┘')
+        line_number = len(text_list) - 1
 
     def remove_leading_spaces(self, text_list, line_number, spaces_to_remove):
         lines = text_list[line_number:]

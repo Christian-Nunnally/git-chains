@@ -61,7 +61,7 @@ class CommitTree:
             else:
                 for sibling in node.parent.children:
                     if (not sibling == node):
-                        if (sibling.commit.commit_time < node.commit.commit_time):
+                        if (sibling.commit.commit_time > node.commit.commit_time):
                             node.is_stale = True
                             break
         for child in node.children:

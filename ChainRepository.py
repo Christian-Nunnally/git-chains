@@ -101,7 +101,10 @@ class ChainRepository():
             return self.commit_name_map[commit.hex]
         if (len(self.commit_name_map) == 0):
             for branch in self.local_branches:
-                self.commit_name_map[branch.target.hex] = branch.name
+                branch_name = branch.name
+                if (branch_name.startswith("refs/heads/")):
+                    branch_name = branch_name[len("refs/heads/"):] 
+                self.commit_name_map[branch.target.hex] = branch_name
         return '{:7.7}'.format(commit.hex)
 
     def does_commit_have_name(self, commit):

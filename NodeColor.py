@@ -21,7 +21,7 @@ class NodeColor:
         if node.is_reference_node:
             self.name_color = Fore.BLACK + Style.BRIGHT
         elif node.has_name:
-            self.name_color = Fore.BLUE + Style.BRIGHT
+            self.name_color = Fore.WHITE + Style.BRIGHT
         else:
             self.name_color = Fore.WHITE + Style.NORMAL
 
