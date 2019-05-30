@@ -1,12 +1,27 @@
+import sys
 from pygit2 import *
+import argparse
 from ChainRepository import ChainRepository
+from ChainHierarchyPrinter import ChainHierarchyPrinter
 
-local_repo_name = "C:\\Users\\bhealy\\source\\repos\\ASW\\.git"
-master_branch_name = "users/bhealy/master"
-repo = Repository(local_repo_name)
+local_repo_name = "C:\TestingRepo\.git"
+master_branch_name = "master"
 
 def __main__():
     chain_repo = ChainRepository(local_repo_name, master_branch_name)
-    chain_repo.print_chains_from_tree()
+
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('specified_branches', metavar=('from', 'to'), type=str, nargs='*', help='The names of branches you want to chain')
+    args = parser.parse_args()
+
+    number_of_branches_specified = len(args.specified_branches)
+    if number_of_branches_specified == 0:
+        printer = ChainHierarchyPrinter(chain_repo)
+        printer.print()
+    elif number_of_branches_specified == 1:
+        pass
+    elif number_of_branches_specified == 2:
+        suggester = BranchChainSuggester(chain_repo)
+        suggester.suggest(args.specified_branches)
 
 __main__()

@@ -26,7 +26,6 @@ class ChainRepository():
         self.generate_local_branch_logs_to_master()
         self.build_commit_tree()
 
-
     def load_local_branches(self):
         local_branche_names = list(self.repo.branches.local)
         for local_branch_name in local_branche_names:
@@ -87,11 +86,6 @@ class ChainRepository():
 
         self.generate_branch_log_to_master_recursive(commit.parents[0], branch, branch_log, iterations + 1, max_depth_to_search_for_master_commit)
 
-    def print_chains_from_tree(self):
-        print()
-        ChainHierarchyPrinter(self.tree, self.master_log).print()
-        print()
-
     def get_local_branch_logs_starting_with_commit(self, commit):
         if (commit in self.local_branch_logs_to_master_by_start_commit):
             return self.local_branch_logs_to_master_by_start_commit[commit]
@@ -100,7 +94,6 @@ class ChainRepository():
             if (local_branch_log[0].hex == commit.hex):
                 local_branch_logs_starting_with_commit.append(local_branch_log)
         return local_branch_logs_starting_with_commit
-
     
     def get_commit_name(self, commit):
         if (commit.hex in self.commit_name_map):
@@ -124,6 +117,7 @@ class ChainRepository():
             master_parent_node = self.tree.insert(master_parent_id, master_commit, master_commit_name, master_commit_has_name)
             master_parent_id = master_parent_node.key
             local_branch_logs_from_commit = self.get_local_branch_logs_starting_with_commit(master_commit)
+
             for local_branch_log in local_branch_logs_from_commit:
                 parent_id = master_parent_id
                 for commit in local_branch_log[1:]:
