@@ -2,6 +2,7 @@ from pygit2 import *
 from ChainHierarchyPrinter import ChainHierarchyPrinter
 from CommitNode import CommitNode
 from CommitTree import CommitTree
+from LogItem import LogItem
 
 class ChainRepository():
     number_of_commits_to_walk_master = 400
@@ -52,7 +53,7 @@ class ChainRepository():
         for local_branch in self.local_branches:
             branch_log_to_master = self.generate_branch_log_to_master(local_branch)
             if (len(branch_log_to_master) > 0):
-                start_commit = branch_log_to_master[0]
+                start_commit = branch_log_to_master[0].commit
                 if (start_commit in self.local_branch_logs_to_master_by_start_commit):
                     self.local_branch_logs_to_master_by_start_commit[start_commit].append(branch_log_to_master)
                 else:
@@ -69,7 +70,8 @@ class ChainRepository():
     def generate_branch_log_to_master_recursive(self, commit, branch, branch_log, iterations, max_depth_to_search_for_master_commit, stop_commit = None):
         if (not stop_commit == None and commit.hex == stop_commit.hex):
             return
-        branch_log.append(commit)
+        is_reference = not stop_commit == None
+        branch_log.append(LogItem(commit, is_reference))
         if (self.master_log.__contains__(commit)):
             return
         if (len(commit.parents) == 0):
@@ -90,7 +92,7 @@ class ChainRepository():
             return self.local_branch_logs_to_master_by_start_commit[commit]
         local_branch_logs_starting_with_commit = []
         for local_branch_log in self.local_branch_logs_to_master:
-            if (local_branch_log[0].hex == commit.hex):
+            if (local_branch_log[0].commit.hex == commit.hex):
                 local_branch_logs_starting_with_commit.append(local_branch_log)
         return local_branch_logs_starting_with_commit
     
@@ -109,18 +111,18 @@ class ChainRepository():
         self.tree = CommitTree()
         master_parent_id = None
         for master_commit in self.master_log:
-
             master_commit_name = self.get_commit_name(master_commit)
             master_commit_has_name = self.does_commit_have_name(master_commit)
-            master_parent_node = self.tree.insert(master_parent_id, master_commit, master_commit_name, master_commit_has_name, True)
+            master_parent_node = self.tree.insert(master_parent_id, master_commit, master_commit_name, master_commit_has_name, True, False)
             master_parent_id = master_parent_node.key
             local_branch_logs_from_commit = self.get_local_branch_logs_starting_with_commit(master_commit)
 
             for local_branch_log in local_branch_logs_from_commit:
                 parent_id = master_parent_id
-                for commit in local_branch_log[1:]:
+                for log_item in local_branch_log[1:]:
+                    commit = log_item.commit
                     commit_name = self.get_commit_name(commit)
                     commit_has_name = self.does_commit_have_name(commit)
-                    parent_node = self.tree.insert(parent_id, commit, commit_name, commit_has_name, False)
+                    parent_node = self.tree.insert(parent_id, commit, commit_name, commit_has_name, False, log_item.is_reference)
                     parent_id = parent_node.key
         self.tree.refresh_nodes_staleness_status()

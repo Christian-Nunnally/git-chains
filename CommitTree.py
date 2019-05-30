@@ -5,8 +5,7 @@ class CommitTree:
     root = None
     nodes = {}
 
-    def insert(self, parent_id, commit, pretty_name, has_name, is_part_of_master):
-        is_reference_node = not self.is_child_of_parent(parent_id, commit)
+    def insert(self, parent_id, commit, pretty_name, has_name, is_part_of_master, is_reference_node):
         new_node = CommitNode(commit, pretty_name, is_reference_node, has_name)
         new_node.is_part_of_master = is_part_of_master
 
@@ -18,14 +17,6 @@ class CommitTree:
         if self.root == None:
             self.root = new_node
         return new_node
-
-    def is_child_of_parent(self, parent_id, commit):
-        if (parent_id == None):
-            return True
-        for parent in commit.parents:
-            if parent.id == parent_id:
-                return True
-        return len(commit.parents) == 0 or parent_id is None
 
     def link_child_with_parent(self, parent_id, child):
         if parent_id != None:
