@@ -3,6 +3,7 @@ from pygit2 import *
 import argparse
 from ChainRepository import ChainRepository
 from ChainHierarchyPrinter import ChainHierarchyPrinter
+from BranchChainSuggester import BranchChainSuggester
 
 local_repo_name = "C:\TestingRepo\.git"
 master_branch_name = "master"
@@ -23,5 +24,6 @@ def __main__():
     elif number_of_branches_specified == 2:
         suggester = BranchChainSuggester(chain_repo)
         suggester.suggest(args.specified_branches)
+    print()
 
 __main__()

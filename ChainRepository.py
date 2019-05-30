@@ -71,10 +71,9 @@ class ChainRepository():
             return
         branch_log.append(commit)
         if (self.master_log.__contains__(commit)):
-            print(branch.name + " branches from master at commit " + commit.hex)
             return
         if (len(commit.parents) == 0):
-            print(branch.name + " not based on any commit in master")
+            print(branch.name + " does not intersect with the cached master. Try increasing number_of_commits_to_walk_master.")
             branch_log = []
             return
         if iterations > self.number_of_commits_to_walk_master:
@@ -113,7 +112,6 @@ class ChainRepository():
 
             master_commit_name = self.get_commit_name(master_commit)
             master_commit_has_name = self.does_commit_have_name(master_commit)
-            print("Building Tree: inserting master " + master_commit_name)
             master_parent_node = self.tree.insert(master_parent_id, master_commit, master_commit_name, master_commit_has_name)
             master_parent_id = master_parent_node.key
             local_branch_logs_from_commit = self.get_local_branch_logs_starting_with_commit(master_commit)
@@ -123,10 +121,6 @@ class ChainRepository():
                 for commit in local_branch_log[1:]:
                     commit_name = self.get_commit_name(commit)
                     commit_has_name = self.does_commit_have_name(commit)
-                    print("Building Tree: inserting " + commit_name)
                     parent_node = self.tree.insert(parent_id, commit, commit_name, commit_has_name)
                     parent_id = parent_node.key
-
-
-
-
+        self.tree.refresh_nodes_staleness_status()

@@ -11,6 +11,7 @@ class CommitNode:
         self.children = []
         self.is_reference_node = is_reference_node
         self.has_name = has_name
+        self.is_stale = False
         if is_reference_node:
             self.key = CommitNode.uid
         else:
@@ -18,7 +19,7 @@ class CommitNode:
         CommitNode.uid += 1
 
     def add(self, child):
-        if (self.can_add(child)):
+        if self.can_add(child):
             self.children.append(child)
             child.parent = self
 
