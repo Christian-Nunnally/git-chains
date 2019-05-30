@@ -5,9 +5,10 @@ class CommitTree:
     root = None
     nodes = {}
 
-    def insert(self, parent_id, commit, pretty_name, has_name):
+    def insert(self, parent_id, commit, pretty_name, has_name, is_part_of_master):
         is_reference_node = not self.is_child_of_parent(parent_id, commit)
         new_node = CommitNode(commit, pretty_name, is_reference_node, has_name)
+        new_node.is_part_of_master = is_part_of_master
 
         if new_node.key in self.nodes:
             return self.nodes[new_node.key]
