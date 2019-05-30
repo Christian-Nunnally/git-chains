@@ -42,13 +42,13 @@ class ChainHierarchyPrinter:
         if (not self.verbose_branch_names):
             pretty_name = os.path.basename(pretty_name)
         color = NodeColor(node)
-        line = str(pretty_name)
+        line = str(color.name_color + pretty_name)
         
         line = ' ' + line
         if (len(sorted_children) > 0):
             line = '┐' + line
 
-        line = color.color + self.commit_style + color.reset + line
+        line = color.status_color + self.commit_style + color.reset + line
 
         if (omitted_parent and self.show_omitted_parents):
             line = color.omitted_parent + '◌' + color.reset + line

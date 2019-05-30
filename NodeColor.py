@@ -10,15 +10,25 @@ from CommitNode import CommitNode
 class NodeColor:
     node = None
     omitted_parent = Fore.CYAN + Style.BRIGHT
-    color = Fore.RED
+    name_color = Fore.RED
+    status_color = Fore.RED
     reset = Fore.RESET
 
     def __init__(self, node):
         init(autoreset=True)
         self.node = node
-        if (node.is_reference_node):
-            self.color = Fore.YELLOW + Style.BRIGHT
-        elif (node.children):
-            self.color = Fore.GREEN + Style.BRIGHT
+
+        if node.is_reference_node:
+            self.name_color = Fore.BLACK + Style.BRIGHT
+        elif node.has_name:
+            self.name_color = Fore.BLUE + Style.BRIGHT
         else:
-            self.color = Fore.BLUE + Style.BRIGHT
+            self.name_color = Fore.WHITE + Style.NORMAL
+
+        if node.parent != None and node.parent.is_stale:
+            self.status_color = Fore.YELLOW + Style.DIM
+            self.omitted_parent = Fore.YELLOW + Style.DIM
+        elif node.is_stale:
+            self.status_color = Fore.YELLOW + Style.DIM
+        else:
+            self.status_color = Fore.GREEN + Style.BRIGHT
