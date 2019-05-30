@@ -63,19 +63,21 @@ class ChainRepository():
     def generate_branch_log_to_master(self, branch):
         branch_log_to_master = []
         commit = self.repo.get(branch.target)
-        self.generate_branch_log_to_master_recursive(commit, branch, branch_log_to_master, 0, self.number_of_commits_to_walk_master)
+        self.generate_branch_log_to_master_recursive(commit, branch_log_to_master, 0, self.number_of_commits_to_walk_master, None, None)
         branch_log_to_master.reverse()
         return branch_log_to_master
 
-    def generate_branch_log_to_master_recursive(self, commit, branch, branch_log, iterations, max_depth_to_search_for_master_commit, stop_commit = None):
+    def generate_branch_log_to_master_recursive(self, commit, branch_log, iterations, max_depth_to_search_for_master_commit, stop_commit, fake_parent):
         if (not stop_commit == None and commit.hex == stop_commit.hex):
             return
         is_reference = not stop_commit == None
-        branch_log.append(LogItem(commit, is_reference))
+        if (len(commit.parents) > 0 and not stop_commit == None and commit.parents[0].hex == stop_commit.hex):
+            branch_log.append(LogItem(commit, is_reference, fake_parent))
+        else:
+            branch_log.append(LogItem(commit, is_reference))
         if (self.master_log.__contains__(commit)):
             return
         if (len(commit.parents) == 0):
-            print(branch.name + " does not intersect with the cached master. Try increasing number_of_commits_to_walk_master.")
             branch_log = []
             return
         if iterations > self.number_of_commits_to_walk_master:
@@ -83,9 +85,10 @@ class ChainRepository():
         
         if (len(commit.parents) == 2 and self.flatten_merges_into_tree):
             merge_base = self.repo.merge_base(commit.parents[0].oid, commit.parents[1].oid)
-            self.generate_branch_log_to_master_recursive(commit.parents[1], branch, branch_log, iterations + 1, max_depth_to_search_for_master_commit, merge_base)
+            new_fake_parent = commit.parents[0].oid
+            self.generate_branch_log_to_master_recursive(commit.parents[1], branch_log, iterations + 1, max_depth_to_search_for_master_commit, merge_base, new_fake_parent)
 
-        self.generate_branch_log_to_master_recursive(commit.parents[0], branch, branch_log, iterations + 1, max_depth_to_search_for_master_commit)
+        self.generate_branch_log_to_master_recursive(commit.parents[0], branch_log, iterations + 1, max_depth_to_search_for_master_commit, None, fake_parent)
 
     def get_local_branch_logs_starting_with_commit(self, commit):
         if (commit in self.local_branch_logs_to_master_by_start_commit):
@@ -126,6 +129,10 @@ class ChainRepository():
                     commit = log_item.commit
                     commit_name = self.get_commit_name(commit)
                     commit_has_name = self.does_commit_have_name(commit)
-                    parent_node = self.tree.insert(parent_id, commit, commit_name, commit_has_name, False, log_item.is_reference)
+                    if (log_item.fake_parent_id == None):
+                        parent_node = self.tree.insert(parent_id, commit, commit_name, commit_has_name, False, log_item.is_reference)
+                    else:
+                        parent_node = self.tree.insert(log_item.fake_parent_id, commit, commit_name, commit_has_name, False, log_item.is_reference)
                     parent_id = parent_node.key
+                print()
         self.tree.refresh_nodes_staleness_status()

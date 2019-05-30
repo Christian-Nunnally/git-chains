@@ -41,7 +41,7 @@ class CommitTree:
 
     def get_nodes_with_sub_string_in_name_recursive(self, node, sub_string):
         found_nodes = []
-        if node.pretty_name == sub_string:
+        if not node.is_reference_node and node.pretty_name == sub_string:
             return [node]
         if node.pretty_name.__contains__(sub_string):
             if (not node.is_reference_node):

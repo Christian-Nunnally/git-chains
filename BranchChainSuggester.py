@@ -24,11 +24,13 @@ class BranchChainSuggester:
         to_branch_name = to_branch_head_commit.pretty_name
         
         merge_base = self.chain_repo.repo.merge_base(from_branch_head_commit.commit.id, to_branch_head_commit.commit.id)
-        if (merge_base == from_branch_head_commit):
-            print(from_branch_name + " is already full merged in to " + to_branch_name)
+        colored_from_branch_name = Fore.BLUE + Style.BRIGHT + from_branch_name + Fore.RESET
+        colored_to_branch_name = Fore.BLUE + Style.BRIGHT + to_branch_name + Fore.RESET
+        if (merge_base == from_branch_head_commit.commit.id):
+            print(colored_from_branch_name + " is already fully merged in to " + colored_to_branch_name)
         else:
-            print("\nTo ensure all the changes in " + from_branch_name + " are in " + to_branch_name + " via a rebase:")
-            print("\n\t" + "git rebase " + from_branch_name + " " + to_branch_name + "\n")
+            print("\nTo ensure all the changes in " + colored_from_branch_name + " are in " + colored_to_branch_name + " via a rebase:")
+            print("\n\t" + "git rebase " + colored_from_branch_name + " " + colored_to_branch_name + "\n")
     
     def get_single_branch_from_substring_of_name(self, name_substring):
         matching_branch_head_commits = self.chain_repo.tree.get_nodes_with_sub_string_in_name(name_substring)
