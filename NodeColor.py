@@ -9,7 +9,7 @@ from CommitNode import CommitNode
 
 class NodeColor:
     node = None
-    omitted_parent = Fore.CYAN + Style.BRIGHT
+    omitted_parent = Fore.GREEN + Style.BRIGHT
     name_color = Fore.RED
     status_color = Fore.RED
     reset = Fore.RESET
@@ -30,5 +30,7 @@ class NodeColor:
             self.omitted_parent = Fore.YELLOW + Style.DIM
         elif node.is_stale:
             self.status_color = Fore.YELLOW + Style.DIM
+        elif node.is_part_of_master:
+            self.status_color = Fore.WHITE + Style.NORMAL
         else:
             self.status_color = Fore.GREEN + Style.BRIGHT
