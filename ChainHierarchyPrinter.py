@@ -2,19 +2,19 @@ from CommitTree import CommitTree
 import os
 
 class ChainHierarchyPrinter:
-    def __init__(self, tree, master_log):
+    def __init__(self, chain_repo):
         self.no_vertical_white_space = True
         self.single_line_vertical_white_space = False
-        self.exclude_nodes_with_one_child = True
+        self.exclude_nodes_with_one_child = False
         self.verbose_branch_names = False
         self.show_omitted_parents = True
         self.show_reference_nodes = False
         self.always_print_nodes_with_names = True
-        self.align_left = False
+        self.align_left = True
         self.horizontial_spaces = 3
         self.commit_style = '●'
-        self.tree = tree
-        self.master_log = master_log
+        self.tree = chain_repo.tree
+        self.master_log = chain_repo.master_log
 
     def print(self):
         text_list = self.build_text_list()
@@ -88,8 +88,8 @@ class ChainHierarchyPrinter:
         self.remove_tailing_whitespace(text_list)
 
     def inline_left_commits(self, text_list):
-        for line_number in range(len(text_list) * 2 + 1):
-            if (line_number >= len(text_list) - 2):
+        for line_number in range(len(text_list) * 2):
+            if (line_number >= len(text_list) - 1):
                 break
             line = text_list[line_number]
             for i in range(len(line) - 1):
