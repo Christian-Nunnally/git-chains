@@ -4,16 +4,18 @@ import os
 
 class ChainHierarchyPrinter:
     def __init__(self, chain_repo):
-        self.no_vertical_white_space = True
-        self.single_line_vertical_white_space = False
+        self.no_vertical_white_space = False
+        self.single_line_vertical_white_space = True
         self.exclude_nodes_with_one_child = True
         self.verbose_branch_names = False
         self.show_omitted_parents = True
         self.show_reference_nodes = False
         self.always_print_nodes_with_names = True
-        self.align_left = False
+        self.align_left = True
         self.horizontial_spaces = 3
         self.commit_style = '●'
+        self.parent_style = '◌'
+
         self.tree = chain_repo.tree
         self.master_log = chain_repo.master_log
 
@@ -51,7 +53,7 @@ class ChainHierarchyPrinter:
         line = color.status_color + self.commit_style + color.reset + line
 
         if (omitted_parent and self.show_omitted_parents):
-            line = color.omitted_parent + '◌' + color.reset + line
+            line = color.omitted_parent + self.parent_style + color.reset + line
         else:
             line = '─' + line
 

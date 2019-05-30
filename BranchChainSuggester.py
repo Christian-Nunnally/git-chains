@@ -29,10 +29,9 @@ class BranchChainSuggester:
     def get_single_branch_from_substring_of_name(self, name_substring):
         matching_branch_head_commits = self.chain_repo.tree.get_nodes_with_sub_string_in_name(name_substring)
         if (not len(matching_branch_head_commits) == 1):
-            print(branches_names_to_chain[0] + " is not a substring of a unique commit, please make the branch name more specific")
-            print("Commits that partially match " + branches_names_to_chain[0] + ":\n")
-            print("\t", end="")
+            print(name_substring + " is not a substring of a unique commit, please make the branch name more specific")
+            print("Commits that partially match " + name_substring + ":\n")
             for commit in matching_branch_head_commits:
-                print(commit.pretty_name)
+                print("\t" + commit.pretty_name)
             return None
         return matching_branch_head_commits[0]
