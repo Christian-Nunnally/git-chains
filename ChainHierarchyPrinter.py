@@ -13,7 +13,7 @@ class ChainHierarchyPrinter:
         self.verbose_branch_names = False
         self.show_reference_nodes = False
         self.always_print_nodes_with_names = True
-        self.show_individual_obmitted_parents = True
+        self.show_individual_excluded_parents = False
         self.align_left = False
         self.horizontial_spaces = 3
         self.commit_style = ChainHierarchyPrinter.CommitIndicator
@@ -54,7 +54,7 @@ class ChainHierarchyPrinter:
         line = color.status_color + self.commit_style + color.reset + line
 
         if (omitted_parents > 0):
-            if (not self.show_individual_obmitted_parents):
+            if (not self.show_individual_excluded_parents):
                 omitted_parents = 1
             line = color.omitted_parent + (self.parent_style * omitted_parents) + color.reset + line
         else:

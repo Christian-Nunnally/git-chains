@@ -4,12 +4,14 @@ import argparse
 from ChainRepository import ChainRepository
 from ChainHierarchyPrinter import ChainHierarchyPrinter
 from BranchChainSuggester import BranchChainSuggester
+from colorama import *
 from Legend import Legend
 
 local_repo_name = "C:\TestingRepo\.git"
 master_branch_name = "master"
 
 def __main__():
+    init(autoreset=True)
     Legend.print_legend()
 
     chain_repo = ChainRepository(local_repo_name, master_branch_name)
@@ -26,8 +28,9 @@ def __main__():
     elif number_of_branches_specified == 1:
         pass
     elif number_of_branches_specified == 2:
+        printer = ChainHierarchyPrinter(chain_repo)
+        printer.print()
         suggester = BranchChainSuggester(chain_repo)
         suggester.suggest(args.specified_branches)
     print()
-
 __main__()

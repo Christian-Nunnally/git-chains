@@ -5,7 +5,7 @@ from CommitNode import CommitNode
 # BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE, RESET
 # Styles are
 # NORMAL, BRIGHT
-# everythnig else is not supported in Windows.
+# everything else is not supported in Windows.
 
 class NodeColor:
     ReferenceNodeColor = Fore.LIGHTBLACK_EX
