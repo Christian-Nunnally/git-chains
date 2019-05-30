@@ -6,12 +6,12 @@ class ChainHierarchyPrinter:
     def __init__(self, chain_repo):
         self.no_vertical_white_space = True
         self.single_line_vertical_white_space = False
-        self.exclude_nodes_with_one_child = False
+        self.exclude_nodes_with_one_child = True
         self.verbose_branch_names = False
         self.show_omitted_parents = True
         self.show_reference_nodes = False
         self.always_print_nodes_with_names = True
-        self.align_left = True
+        self.align_left = False
         self.horizontial_spaces = 3
         self.commit_style = '●'
         self.tree = chain_repo.tree
@@ -158,7 +158,7 @@ class ChainHierarchyPrinter:
                             self.replace_char_in_line(text_list, line_number, char_number, '┐')
 
     def replace_char_in_line(self, text_list, line_index, char_index, char):
-        text_list[line_index] = text_list[line_index][char_index - 1:] + char + text_list[line_index][:char_index]
+        text_list[line_index] = text_list[line_index][:char_index] + char + text_list[line_index][char_index + 1:]
 
     def add_header_to_text_list(self, text_list):
         text_list.insert(0, '.')
