@@ -6,7 +6,6 @@ class CommitTree:
     nodes = {}
 
     def insert(self, parent_id, commit, pretty_name, has_name):
-        print(parent_id)
         is_reference_node = not self.is_child_of_parent(parent_id, commit)
         new_node = CommitNode(commit, pretty_name, is_reference_node, has_name)
 
@@ -15,7 +14,6 @@ class CommitTree:
 
         self.nodes[new_node.key] = new_node
         self.link_child_with_parent(parent_id, new_node)
-        print("Inserted " + pretty_name + " parent = " + str(parent_id))
         if self.root == None:
             self.root = new_node
         return new_node
@@ -45,3 +43,33 @@ class CommitTree:
         for child in node.children:
             if (child != node):
                 self.print_node(child)
+    
+    def get_nodes_with_sub_string_in_name(self, sub_string):
+        return self.get_nodes_with_sub_string_in_name_recursive(self.root, sub_string)
+
+    def get_nodes_with_sub_string_in_name_recursive(self, node, sub_string):
+        found_nodes = []
+        if node.pretty_name == sub_string:
+            return [node]
+        if node.pretty_name.__contains__(sub_string):
+            found_nodes.append(node)
+        for child in node.children:
+            found_nodes += self.get_nodes_with_sub_string_in_name_recursive(child, sub_string)
+        return found_nodes
+
+    def refresh_nodes_staleness_status(self):
+        self.refresh_nodes_staleness_status_recursive(self.root)
+
+    def refresh_nodes_staleness_status_recursive(self, node):
+        node.is_stale = False
+        if not node.parent == None:
+            if node.parent.is_stale:
+                node.is_stale = True
+            else:
+                for sibling in node.parent.children:
+                    if (not sibling == node):
+                        if (sibling.commit.commit_time < node.commit.commit_time):
+                            node.is_stale = True
+                            break
+        for child in node.children:
+            self.refresh_nodes_staleness_status_recursive(child)
