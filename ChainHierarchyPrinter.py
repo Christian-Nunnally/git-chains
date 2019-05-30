@@ -140,7 +140,7 @@ class ChainHierarchyPrinter:
             return
         if (text_list[y][x] != ' '):
             return
-        self.replace_char_in_line(text_list, x, y, '│') 
+        self.replace_char_in_line(text_list, y, x, '│') 
         self.extend_pipes_up_recursive(text_list, x, y - 1)
     
     def fix_joints(self, text_list):
