@@ -25,10 +25,14 @@ class NodeColor:
         else:
             self.name_color = Fore.WHITE + Style.NORMAL
 
-        if node.parent != None and node.parent.is_stale:
-            self.status_color = Fore.YELLOW + Style.DIM
-            self.omitted_parent = Fore.YELLOW + Style.DIM
-        elif node.is_stale:
+        if node.parent != None:
+            if node.parent.is_stale:
+                self.status_color = Fore.YELLOW + Style.DIM
+                self.omitted_parent = Fore.YELLOW + Style.DIM
+            elif node.parent.is_part_of_master:
+                self.omitted_parent = Fore.WHITE + Style.BRIGHT
+
+        if node.is_stale:
             self.status_color = Fore.YELLOW + Style.DIM
         elif node.is_part_of_master:
             self.status_color = Fore.WHITE + Style.NORMAL
