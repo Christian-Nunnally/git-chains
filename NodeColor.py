@@ -8,6 +8,13 @@ from CommitNode import CommitNode
 # everythnig else is not supported in Windows.
 
 class NodeColor:
+    ReferenceNodeColor = Fore.LIGHTBLACK_EX
+    NamedNodeColor = Fore.LIGHTBLUE_EX
+    DefaultNodeColor = Fore.WHITE
+
+    StaleStatusColor = Fore.YELLOW + Style.NORMAL
+    UpToDateStatusColor = Fore.GREEN + Style.BRIGHT
+
     node = None
     omitted_parent = Fore.GREEN + Style.BRIGHT
     name_color = Fore.RED
@@ -19,22 +26,22 @@ class NodeColor:
         self.node = node
 
         if node.is_reference_node:
-            self.name_color = Fore.BLACK + Style.BRIGHT
+            self.name_color = NodeColor.ReferenceNodeColor
         elif node.has_name:
-            self.name_color = Fore.WHITE + Style.BRIGHT
+            self.name_color = NodeColor.NamedNodeColor
         else:
-            self.name_color = Fore.WHITE + Style.NORMAL
+            self.name_color = NodeColor.DefaultNodeColor
 
         if node.parent != None:
             if node.parent.is_stale:
-                self.status_color = Fore.YELLOW + Style.DIM
-                self.omitted_parent = Fore.YELLOW + Style.DIM
+                self.status_color = NodeColor.StaleStatusColor
+                self.omitted_parent = NodeColor.StaleStatusColor
             elif node.parent.is_part_of_master:
-                self.omitted_parent = Fore.WHITE + Style.BRIGHT
+                self.omitted_parent = NodeColor.DefaultNodeColor + Style.BRIGHT
 
         if node.is_stale:
-            self.status_color = Fore.YELLOW + Style.DIM
+            self.status_color = NodeColor.StaleStatusColor
         elif node.is_part_of_master:
-            self.status_color = Fore.WHITE + Style.NORMAL
+            self.status_color = NodeColor.DefaultNodeColor
         else:
-            self.status_color = Fore.GREEN + Style.BRIGHT
+            self.status_color = NodeColor.UpToDateStatusColor

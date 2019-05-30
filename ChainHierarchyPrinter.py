@@ -3,6 +3,9 @@ from NodeColor import NodeColor
 import os
 
 class ChainHierarchyPrinter:
+    CommitIndicator = '●'
+    HiddenParentIndicator = '◌'
+
     def __init__(self, chain_repo):
         self.no_vertical_white_space = False
         self.vertical_white_space_between_chains_off_master = True
@@ -13,8 +16,8 @@ class ChainHierarchyPrinter:
         self.show_individual_obmitted_parents = True
         self.align_left = False
         self.horizontial_spaces = 3
-        self.commit_style = '●'
-        self.parent_style = '◌'
+        self.commit_style = ChainHierarchyPrinter.CommitIndicator
+        self.parent_style = ChainHierarchyPrinter.HiddenParentIndicator
 
         self.tree = chain_repo.tree
         self.master_log = chain_repo.master_log
