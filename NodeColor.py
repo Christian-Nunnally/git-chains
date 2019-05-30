@@ -30,7 +30,7 @@ class NodeColor:
             self.omitted_parent = Fore.YELLOW + Style.DIM
         elif node.is_stale:
             self.status_color = Fore.YELLOW + Style.DIM
-        elif node.is_master:
+        elif node.is_part_of_master:
             self.status_color = Fore.WHITE + Style.NORMAL
         else:
             self.status_color = Fore.GREEN + Style.BRIGHT
