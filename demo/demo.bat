@@ -2,6 +2,13 @@
 SET /A file_name_int = 0
 cls
 
+CALL :Demo1
+CALL :Shutdown
+EXIT /B 0
+
+REM Demo1
+:Demo1
+
 git init
 mkdir temp_files
 CALL :Waiter
@@ -53,9 +60,7 @@ git checkout Refactor
 git merge Feature
 CALL :ShowChainsAndMessage "We've now completed the checkout and merge."
 
-CALL :Shutdown
 EXIT /B 0
-
 
 REM Begin methods
 
