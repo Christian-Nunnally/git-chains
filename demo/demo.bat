@@ -39,14 +39,7 @@ CALL :Waiter
 EXIT /B 0
 
 :Chains
-python ..\chains.py
-EXIT /B 0
-
-:MakeCommit
-CALL :Generate_rando_file
-git stage .
-git commit -m "."
-cls
+python ..\git-chains.py
 EXIT /B 0
 
 :Generate_rando_file

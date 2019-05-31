@@ -49,7 +49,6 @@ def __main__():
     if args.show:
         printer = ChainHierarchyPrinter(chain_repo)
         printer.print()
-        return
 
     if number_of_branches_specified == 2:
         suggester = BranchChainSuggester(chain_repo)
