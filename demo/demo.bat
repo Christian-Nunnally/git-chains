@@ -25,6 +25,9 @@ CALL :Chains
 CALL :Shutdown
 EXIT /B 0
 
+
+REM Begin methods
+
 :Chains
 python ..\chains.py
 EXIT /B 0
