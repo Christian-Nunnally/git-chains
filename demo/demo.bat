@@ -24,7 +24,16 @@ CALL :ShowChainsAndMessage "The bubbles to the left of 'master' indicate we have
 git checkout -b Feature
 CALL :MakeCommit
 
-CALL :ShowChainsAndMessage "We have now created a feature branch. Exciting, amaze."
+CALL :ShowChainsAndMessage "We have now created a feature branch. Exciting, amaze. Lets add some commits."
+
+CALL :MakeCommit
+CALL :MakeCommit
+CALL :ShowChainsAndMessage "We now have some commits to our feature. Time to start a refactor! Easy, let's branch off our feature."
+
+git checkout -b Refactor
+
+CALL :MakeCommit
+CALL :ShowChainsAndMessage "Spectacular. We now have a refactor happening."
 
 CALL :Shutdown
 EXIT /B 0
