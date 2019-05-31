@@ -112,12 +112,17 @@ class ChainHierarchyPrinter:
                 if (self.text_list[line_number][char_index] == '└'):
                     self.remove_leading_spaces(line_number)
                     space_count = 0
-                    current_char = self.text_list[line_number - 1][space_count]
+                    current_char_index = 0
+                    current_char = self.text_list[line_number - 1][current_char_index]
                     while(not (current_char == '┐' or current_char == '|')):
-                        current_char = self.text_list[line_number - 1][space_count]
-                        space_count += 1
+                        print(current_char)
+                        current_char = self.text_list[line_number - 1][current_char_index]
+                        if (current_char == self.parent_style or current_char == self.commit_style or current_char == '·' or current_char == '·' or current_char == '─' or current_char == '┐' or current_char == '└'):
+                            space_count += 1
+                        current_char_index += 1
                         if (len(self.text_list[line_number - 1]) <= space_count):
                             break
+                    print(space_count)
                     self.text_list.insert(line_number, '┌' + ('─' * (space_count - 2)) +  '┘')
                     line_number += 1
                     break
