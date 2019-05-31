@@ -6,16 +6,21 @@ git init
 mkdir temp_files
 CALL :Waiter
 
-CALL :MakeCommit
+cls
+git stage .
+git commit -m "."
+cls
 
 CALL :Chains
 echo We have committed to master...very boring, but we gotta start somewhere.
 CALL :Waiter
 
-CALL :MakeCommit
+CALL :Generate_rando_file
+git stage .
+git commit -m "."
+cls
 
 CALL :Chains
-CALL :Waiter
 
 CALL :Shutdown
 EXIT /B 0
@@ -24,14 +29,7 @@ EXIT /B 0
 REM Begin methods
 
 :Chains
-python ..\chains.py
-EXIT /B 0
-
-:MakeCommit
-CALL :Generate_rando_file
-git stage .
-git commit -m "."
-cls
+python ..\git-chains.py
 EXIT /B 0
 
 :Generate_rando_file
