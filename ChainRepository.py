@@ -5,7 +5,7 @@ from CommitTree import CommitTree
 from LogItem import LogItem
 
 class ChainRepository():
-    number_of_commits_to_walk_master = 400
+    number_of_commits_to_walk_master = 200
 
     def __init__(self, repo_path, master_branch_name):
         self.flatten_merges_into_tree = True
