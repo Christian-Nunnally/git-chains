@@ -7,12 +7,22 @@ mkdir temp_files
 CALL :Waiter
 
 CALL :MakeCommit
+CALL :MakeCommit
 
 CALL :Chains
 echo We have committed to master...very boring, but we gotta start somewhere.
 CALL :Waiter
 
 CALL :MakeCommit
+CALL :MakeCommit
+CALL :MakeCommit
+CALL :MakeCommit
+CALL :MakeCommit
+CALL :MakeCommit
+CALL :MakeCommit
+CALL :MakeCommit
+echo The bubbles to the left of 'master' indicate we have more than 10 commits ahead of our current state.
+CALL :Waiter
 
 CALL :Chains
 CALL :Waiter
