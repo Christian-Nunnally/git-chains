@@ -18,7 +18,7 @@ def __main__():
 
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('specified_branches', metavar=('from', 'to'), type=str, nargs='*', help='The names of branches you want to chain')
-    parser.add_argument('help', type=bool, help='Prints the help for Chains')
+    # parser.add_argument('help', type=bool, help='Prints the help for Chains')
     args = parser.parse_args()
 
     number_of_branches_specified = len(args.specified_branches)
@@ -32,5 +32,4 @@ def __main__():
         printer.print()
         suggester = BranchChainSuggester(chain_repo)
         suggester.suggest(args.specified_branches)
-    print()
 __main__()

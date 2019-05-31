@@ -134,5 +134,4 @@ class ChainRepository():
                     else:
                         parent_node = self.tree.insert(log_item.fake_parent_id, commit, commit_name, commit_has_name, False, log_item.is_reference)
                     parent_id = parent_node.key
-                print()
         self.tree.refresh_nodes_staleness_status()

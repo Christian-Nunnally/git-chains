@@ -102,7 +102,7 @@ class ChainHierarchyPrinter:
         self.extend_pipes_up(text_list)
         self.fix_joints(text_list)
         if (self.align_left):
-            self.inline_left_commits(text_list)
+           self.inline_left_commits(text_list)
         self.remove_tailing_whitespace(text_list)
 
     def inline_left_commits(self, text_list):
