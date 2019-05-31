@@ -12,24 +12,34 @@ master_branch_name = "master"
 
 def __main__():
     init(autoreset=True)
-    Legend.print_legend()
 
     chain_repo = ChainRepository(local_repo_name, master_branch_name)
 
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('specified_branches', metavar=('from', 'to'), type=str, nargs='*', help='The names of branches you want to chain')
-    # parser.add_argument('help', type=bool, help='Prints the help for Chains')
+    parser.add_argument("-l", "--legend", help="Print out help", action="store_true")
+    parser.add_argument("-r", "--rebase", help="Use the rebase strategy", action="store_true")
+    parser.add_argument("-m", "--merge", help="Use the merge strategy", action="store_true")
+    parser.add_argument("-s", "--show", help="Show the branch chain tree", action="store_true")
     args = parser.parse_args()
+
+    if not args.rebase and not args.merge:
+        args.merge = True
 
     number_of_branches_specified = len(args.specified_branches)
     if number_of_branches_specified == 0:
+        args.show = True
+
+    if args.legend:
+        Legend.print_legend()
+        return
+
+    if args.show:
         printer = ChainHierarchyPrinter(chain_repo)
         printer.print()
-    elif number_of_branches_specified == 1:
-        pass
-    elif number_of_branches_specified == 2:
-        printer = ChainHierarchyPrinter(chain_repo)
-        printer.print()
+        return
+
+    if number_of_branches_specified == 2:
         suggester = BranchChainSuggester(chain_repo)
-        suggester.suggest(args.specified_branches)
+        suggester.suggest(args.specified_branches, args.rebase, args.merge)
 __main__()
