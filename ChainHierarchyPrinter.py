@@ -116,7 +116,7 @@ class ChainHierarchyPrinter:
                     current_char = self.text_list[line_number - 1][current_char_index]
                     while(not (current_char == '┐' or current_char == '|')):
                         current_char = self.text_list[line_number - 1][current_char_index]
-                        if (current_char == self.parent_style or current_char == self.commit_style or current_char == '·' or current_char == '·' or current_char == '─' or current_char == '┐' or current_char == '└' or current_char == ' '):
+                        if (current_char == self.parent_style or current_char == self.commit_style or current_char == '·' or current_char == '·' or current_char == '─' or current_char == '┐' or current_char == '└' or current_char == ' ' or current_char == '|'):
                             space_count += 1
                         current_char_index += 1
                         if (len(self.text_list[line_number - 1]) <= current_char_index):
