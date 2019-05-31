@@ -7,7 +7,7 @@ from BranchChainSuggester import BranchChainSuggester
 from colorama import *
 from Legend import Legend
 
-local_repo_name = "C:\TestingRepo\.git"
+local_repo_name = "C:\ASW\.git"
 master_branch_name = "master"
 
 def __main__():

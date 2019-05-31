@@ -7,9 +7,8 @@ class ChainHierarchyPrinter:
     HiddenParentIndicator = '◌'
 
     def __init__(self, chain_repo):
-        self.no_vertical_white_space = False
         self.vertical_white_space_between_chains_off_master = True
-        self.exclude_nodes_with_one_child = True
+        self.exclude_nodes_with_one_child = False
         self.verbose_branch_names = False
         self.show_reference_nodes = False
         self.always_print_nodes_with_names = True
@@ -38,7 +37,7 @@ class ChainHierarchyPrinter:
         if self.should_skip_over_node(node):
             self.build_text_list_recursively(node.children[0], text_list, left_spaces, omitted_parents + 1)
             return
-
+            
         sorted_children = self.sorted_children(node.children)
 
         pretty_name = node.pretty_name
@@ -80,7 +79,9 @@ class ChainHierarchyPrinter:
             return False
         if self.show_reference_nodes and node.is_reference_node:
             return False
-        return self.exclude_nodes_with_one_child and len(node.children) == 1
+        if self.exclude_nodes_with_one_child and (len(node.children) == 1):
+            return True
+        return False
 
     def add_vertical_whitespace_if_needed(self, text_list):
         if (self.vertical_white_space_between_chains_off_master):
