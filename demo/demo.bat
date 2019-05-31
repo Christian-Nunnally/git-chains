@@ -38,6 +38,13 @@ echo %~1
 CALL :Waiter
 EXIT /B 0
 
+:MakeCommit
+CALL :Generate_rando_file
+git stage .
+git commit -m "."
+cls
+EXIT /B 0
+
 :Chains
 python ..\git-chains.py
 EXIT /B 0
