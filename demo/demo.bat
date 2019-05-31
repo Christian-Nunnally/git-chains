@@ -9,8 +9,10 @@ CALL :Waiter
 CALL :MakeCommit
 CALL :MakeCommit
 
-CALL :ShowChainsAndMessage "We have committed to master...very boring, but we gotta start somewhere."
+CALL :ShowChainsAndMessage "We have committed to master...boring, but we gotta start somewhere. Let's add 10 more commits."
 
+CALL :MakeCommit
+CALL :MakeCommit
 CALL :MakeCommit
 CALL :MakeCommit
 CALL :MakeCommit
@@ -33,7 +35,23 @@ CALL :ShowChainsAndMessage "We now have some commits to our feature. Time to sta
 git checkout -b Refactor
 
 CALL :MakeCommit
-CALL :ShowChainsAndMessage "Spectacular. We now have a refactor happening."
+CALL :ShowChainsAndMessage "Spectacular. We now have a refactor happening. Let's do some edits."
+
+CALL :MakeCommit
+CALL :MakeCommit
+CALL :ShowChainsAndMessage "Beautiful. Amazing. We got some feedback on our feature, let's do some editing there."
+
+git checkout Feature
+CALL :MakeCommit
+CALL :ShowChainsAndMessage "Oh noes, our refactor is now out of date! How do we resolve this?"
+
+CALL :Chains F R
+echo "Seems like a good suggestion, let's try it!"
+CALL :Waiter
+
+git checkout Refactor
+git merge Feature
+CALL :ShowChainsAndMessage "We've now completed the checkout and merge."
 
 CALL :Shutdown
 EXIT /B 0
@@ -55,7 +73,7 @@ cls
 EXIT /B 0
 
 :Chains
-python ..\git-chains.py
+python ..\git-chains.py %*
 EXIT /B 0
 
 :Generate_rando_file
@@ -73,5 +91,4 @@ ECHO Cleaning up repositories...
 rmdir /S /Q .git
 rmdir /S /Q temp_files
 ECHO Closing up shop.
-CALL :Waiter
 EXIT /B 0
