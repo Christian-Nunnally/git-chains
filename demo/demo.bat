@@ -1,10 +1,48 @@
+@ECHO off
+SET /A file_name_int = 0
+cls
+
 git init
-@ECHO off
-set /p DUMMY=Hit ENTER to continue...
-@ECHO on
+mkdir temp_files
+CALL :Waiter
 
+cls
+git stage .
+git commit -m "."
+cls
+
+CALL :Chains
+echo We have committed to master...very boring, but we gotta start somewhere.
+CALL :Waiter
+
+CALL :Generate_rando_file
+git stage .
+git commit -m "."
+cls
+
+CALL :Chains
+
+CALL :Shutdown
+EXIT /B 0
+
+:Chains
 python ..\chains.py
+EXIT /B 0
 
-@ECHO off
+:Generate_rando_file
+ECHO "hello world" >> "temp_files\\%file_name_int%.txt"
+SET /A file_name_int = %file_name_int% + 1
+EXIT /B 0
+
+:Waiter
+set /p DUMMY=Hit ENTER to continue...
+EXIT /B 0
+
+:Shutdown
+cls
 ECHO Cleaning up repositories...
 rmdir /S /Q .git
+rmdir /S /Q temp_files
+ECHO Closing up shop.
+CALL :Waiter
+EXIT /B 0
