@@ -9,9 +9,7 @@ CALL :Waiter
 CALL :MakeCommit
 CALL :MakeCommit
 
-CALL :Chains
-echo We have committed to master...very boring, but we gotta start somewhere.
-CALL :Waiter
+CALL :ShowChainsAndMessage "We have committed to master...very boring, but we gotta start somewhere."
 
 CALL :MakeCommit
 CALL :MakeCommit
@@ -21,17 +19,24 @@ CALL :MakeCommit
 CALL :MakeCommit
 CALL :MakeCommit
 CALL :MakeCommit
-echo The bubbles to the left of 'master' indicate we have more than 10 commits ahead of our current state.
-CALL :Waiter
+CALL :ShowChainsAndMessage "The bubbles to the left of 'master' indicate we have more than 10 commits ahead of our current state."
 
-CALL :Chains
-CALL :Waiter
+git checkout -b Feature
+CALL :MakeCommit
+
+CALL :ShowChainsAndMessage "We have now created a feature branch. Exciting, amaze."
 
 CALL :Shutdown
 EXIT /B 0
 
 
 REM Begin methods
+
+:ShowChainsAndMessage
+CALL :Chains
+echo %~1
+CALL :Waiter
+EXIT /B 0
 
 :Chains
 python ..\chains.py
