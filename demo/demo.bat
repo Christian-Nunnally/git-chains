@@ -1,5 +1,6 @@
 @ECHO off
 SET /A file_name_int = 0
+setlocal enableextensions enabledelayedexpansion
 cls
 
 CALL :Demo1
@@ -97,12 +98,15 @@ EXIT /B 0
 set "letter=!line:~%num%,1!"
 set "delay=%random%%random%%random%%random%%random%%random%%random%"
 set "delay=%delay:~-6%"
-if not "%letter%"=="" set /p "=a%bs%%letter%" <nul
+if not "%letter%"=="" set /p "=%letter%" <nul
+if "%letter%"==" " type IMASPACE.txt
 
 :: adjust the speed higher is faster
 set speed=7
 
+::@ECHO off
 for /L %%b in (1,%speed%,%delay%) do rem
+::@ECHO on
 if "%letter%"=="" echo.&EXIT /B 0
 set /a num+=1
 goto :SlowType
