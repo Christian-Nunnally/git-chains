@@ -55,6 +55,7 @@ CALL :ShowChainsAndMessage "Oh noes, our refactor is now out of date! How do we 
 CALL :Chains F R
 echo "Seems like a good suggestion, let's try it!"
 CALL :Waiter
+cls
 
 git checkout Refactor
 git merge Feature
@@ -66,7 +67,9 @@ REM Begin methods
 
 :ShowChainsAndMessage
 CALL :Chains
-echo %~1
+set num=0
+set "line=%~1"
+call :SlowType
 CALL :Waiter
 EXIT /B 0
 
@@ -89,6 +92,20 @@ EXIT /B 0
 :Waiter
 set /p DUMMY=Hit ENTER to continue...
 EXIT /B 0
+
+:SlowType
+set "letter=!line:~%num%,1!"
+set "delay=%random%%random%%random%%random%%random%%random%%random%"
+set "delay=%delay:~-6%"
+if not "%letter%"=="" set /p "=a%bs%%letter%" <nul
+
+:: adjust the speed higher is faster
+set speed=7
+
+for /L %%b in (1,%speed%,%delay%) do rem
+if "%letter%"=="" echo.&EXIT /B 0
+set /a num+=1
+goto :SlowType
 
 :Shutdown
 cls
