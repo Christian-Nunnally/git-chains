@@ -8,11 +8,11 @@ class ChainHierarchyPrinter:
 
     def __init__(self, chain_repo):
         self.vertical_white_space_between_chains_off_master = True
-        self.show_nodes_with_one_child = True
-        self.show_reference_nodes = False
+        self.show_nodes_with_one_child = False
+        self.show_reference_nodes = True
         self.show_full_branch_names = False
         self.show_nodes_with_names = True
-        self.show_more_excluded_parent_dots = True
+        self.show_more_excluded_parent_dots = False
         self.align_left = True
         self.max_excluded_parents_represented = 8
         self.commit_style = ChainHierarchyPrinter.CommitIndicator
@@ -70,11 +70,13 @@ class ChainHierarchyPrinter:
             return self.parent_style * 3 + "···" + self.parent_style * 2
 
     def should_skip_over_node(self, node):
+        if (node.name == "master"):
+            return False
         if self.show_nodes_with_names and node.has_name:
             return False
         if self.show_reference_nodes and node.is_reference_node:
             return False
-        if self.show_nodes_with_one_child and (len(node.children) == 1):
+        if not self.show_nodes_with_one_child and (len(node.children) == 1):
             return True
         return False
 
@@ -89,9 +91,15 @@ class ChainHierarchyPrinter:
                 self.text_list.append('')
 
     def sorted_children(self, children):
-        sortedList = sorted(children, key=lambda child: child.commit.commit_time)
-        sortedList.reverse()
-        return sortedList
+        sorted_children = []
+        for child in children:
+            if (child.is_part_of_master):
+                sorted_children.append(child)
+        for child in children:
+            if (not child.is_part_of_master):
+                sorted_children.append(child)
+        sorted_children.reverse()
+        return sorted_children
 
     def get_master_branch_commit(self):
         return self.master_log[len(self.master_log - 1)]
@@ -106,6 +114,10 @@ class ChainHierarchyPrinter:
     def inline_left_commits(self):
         line_number = 0
         while(line_number < len(self.text_list) - 2):
+            string_representation_of_line = ''.join(self.text_list[line_number])
+            if "master" in string_representation_of_line and not "master-" in string_representation_of_line:
+                return
+
             line_number += 1
             for i in range(len(self.text_list[line_number]) - 1):
                 char_index = i + 1
@@ -114,13 +126,15 @@ class ChainHierarchyPrinter:
                     space_count = 0
                     current_char_index = 0
                     current_char = self.text_list[line_number - 1][current_char_index]
-                    while(not (current_char == '┐' or current_char == '|')):
+                    while(not (current_char == '┐' or current_char == '│')):
                         current_char = self.text_list[line_number - 1][current_char_index]
-                        if (current_char == self.parent_style or current_char == self.commit_style or current_char == '·' or current_char == '·' or current_char == '─' or current_char == '┐' or current_char == '└' or current_char == ' ' or current_char == '|'):
+                        if (current_char == self.parent_style or current_char == self.commit_style or current_char == '·' or current_char == '·' or current_char == '─' or current_char == '┐' or current_char == '└' or current_char == ' ' or current_char == '│'):
                             space_count += 1
                         current_char_index += 1
                         if (len(self.text_list[line_number - 1]) <= current_char_index):
                             break
+                        return
+                    print(space_count)
                     self.text_list.insert(line_number, '┌' + ('─' * (space_count - 2)) +  '┘')
                     line_number += 1
                     break
