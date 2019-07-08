@@ -12,7 +12,7 @@ class ChainHierarchyPrinter:
         self.show_reference_nodes = True
         self.show_full_branch_names = False
         self.show_nodes_with_names = True
-        self.show_more_excluded_parent_dots = False
+        self.show_more_excluded_parent_dots = True
         self.align_left = True
         self.max_excluded_parents_represented = 8
         self.commit_style = ChainHierarchyPrinter.CommitIndicator
@@ -28,7 +28,7 @@ class ChainHierarchyPrinter:
         self.decorate_text_list()
         for line in self.text_list:
             print(line)
-
+    
     def build_text_list(self):
         start_node = self.tree.root
         self.build_text_list_recursively(start_node, 0, False)
@@ -60,7 +60,7 @@ class ChainHierarchyPrinter:
         self.add_vertical_whitespace_if_needed()
 
     def get_excluded_parent_dots(self, excluded_parent_count):
-        if (excluded_parent_count < 0):
+        if (excluded_parent_count <= 0):
             return ""
         if (not self.show_more_excluded_parent_dots):
             return self.parent_style
@@ -133,8 +133,7 @@ class ChainHierarchyPrinter:
                         current_char_index += 1
                         if (len(self.text_list[line_number - 1]) <= current_char_index):
                             break
-                        return
-                    print(space_count)
+
                     self.text_list.insert(line_number, '┌' + ('─' * (space_count - 2)) +  '┘')
                     line_number += 1
                     break

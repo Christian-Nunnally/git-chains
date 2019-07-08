@@ -12,65 +12,83 @@ REM Demo1
 
 git init
 mkdir temp_files
-CALL :Waiter
 
 CALL :MakeCommit
+git checkout -b master-cached
+git checkout master
 CALL :MakeCommit
 
-CALL :ShowChainsAndMessage "We have committed to master...boring, but we gotta start somewhere. Let's add 10 more commits."
+CALL :ShowChainsAndMessage "git checkout -b amazing-feature"
+git checkout -b amazing-feature
+CALL :MakeCommit
+CALL :ShowChainsAndMessage "git commit -m 'Added new class'"
+CALL :MakeCommit
+CALL :ShowChainsAndMessage "git commit -m 'Added test'"
+CALL :MakeCommit
+CALL :ShowChainsAndMessage "git checkout -b refactor-for-feature"
 
+REM Add random commit to master
+git checkout master
 CALL :MakeCommit
-CALL :MakeCommit
-CALL :MakeCommit
-CALL :MakeCommit
-CALL :MakeCommit
-CALL :MakeCommit
-CALL :MakeCommit
-CALL :MakeCommit
-CALL :MakeCommit
-CALL :MakeCommit
-CALL :ShowChainsAndMessage "The bubbles to the left of 'master' indicate we have more than 10 commits ahead of our current state."
+git checkout amazing-feature
 
-git checkout -b Feature
+git checkout -b refactor-for-feature
+CALL :MakeCommit
+CALL :ShowChainsAndMessage "git commit -m 'Did some refactoring on my awesome feature'"
 CALL :MakeCommit
 
-CALL :ShowChainsAndMessage "We have now created a feature branch. Exciting, amaze. Lets add some commits."
-
+REM Add random commit to master
+git checkout master
 CALL :MakeCommit
-CALL :MakeCommit
-CALL :ShowChainsAndMessage "We now have some commits to our feature. Time to start a refactor! Easy, let's branch off our feature."
+git checkout refactor-for-feature
 
-git checkout -b Refactor
-
+CALL :ShowChainsAndMessage "git commit -m 'Refactor some more'"
 CALL :MakeCommit
-CALL :ShowChainsAndMessage "Spectacular. We now have a refactor happening. Let's do some edits."
-
+git checkout amazing-feature
+CALL :ShowChainsAndMessage "git commit -m 'Address review feedback for amazing-feature'"
 CALL :MakeCommit
-CALL :MakeCommit
-CALL :ShowChainsAndMessage "Beautiful. Amazing. We got some feedback on our feature, let's do some editing there."
 
-git checkout Feature
-CALL :MakeCommit
-CALL :ShowChainsAndMessage "Oh noes, our refactor is now out of date! How do we resolve this?"
-
-CALL :Chains F R
-echo "Seems like a good suggestion, let's try it!"
-CALL :Waiter
+REM MERGE VERSION
+CALL :ShowChainsAndMessage "git chains --merge --show amazing-feature refactor-for-feature"
 cls
+python ..\git-chains.py %* -m -s amazing-feature refactor-for-feature
+timeout /t 4 >nul
+CALL :ShowChainsAndMessage "git checkout refactor-for-feature"
+CALL :ShowChainsAndMessage "git merge amazing-feature"
+git checkout refactor-for-feature
+git merge amazing-feature
+CALL :ShowChainsAndMessage "The feature branch is now in the refactor chain to represent it is fully merged in."
+git checkout amazing-feature
+CALL :ShowChainsAndMessage "git commit -m 'Even more review feedback for amazing-feature'"
+CALL :MakeCommit
+CALL :ShowChainsAndMessage "Now the feature branch is not fully merged in to the refactor branch."
+timeout /t 4 >nul
+CALL :ShowChainsAndMessage "Fin"
+timeout /t 4 >nul
 
-git checkout Refactor
-git merge Feature
-CALL :ShowChainsAndMessage "We've now completed the checkout and merge."
+REM REBASE VERSION
+REM CALL :ShowChainsAndMessage "git chains --rebase --show amazing-feature refactor-for-feature"
+REM cls
+REM python ..\git-chains.py %* -r -s amazing-feature refactor-for-feature
+REM timeout /t 4 >nul
+REM CALL :ShowChainsAndMessage "git rebase amazing-feature refactor-for-feature"
+REM git rebase amazing-feature refactor-for-feature
+REM CALL :ShowChainsAndMessage "The rebase fixed our chain. Now our refactor PR can be targeted to our feature PR."
+REM timeout /t 4 >nul
+REM CALL :ShowChainsAndMessage "Fin"
+REM timeout /t 4 >nul
 
 EXIT /B 0
 
 REM Begin methods
 
 :ShowChainsAndMessage
+cls
 CALL :Chains
 set num=0
 set "line=%~1"
 call :SlowType
+timeout /t 2 >nul
 CALL :Waiter
 EXIT /B 0
 
@@ -91,7 +109,9 @@ SET /A file_name_int = %file_name_int% + 1
 EXIT /B 0
 
 :Waiter
-set /p DUMMY=Hit ENTER to continue...
+ECHO.
+ECHO.
+REM set /p DUMMY=Hit ENTER to continue...
 EXIT /B 0
 
 :SlowType
