@@ -162,14 +162,16 @@ class ChainHierarchyPrinter:
                     self.extend_pipes_up_recursive(char_number, line_number - 1)
 
     def extend_pipes_up_recursive(self, x, y):
-        if (y <= 0):
+        if y <= 0:
             return
-        if len(self.text_list) > y and len(self.text_list[y]) > x:
-            if (self.text_list[y][x] != ' '):
-                return
+        if self.is_text_list_filled(x, y):
+            return
         self.replace_char_in_line(y, x, '│') 
         self.extend_pipes_up_recursive(x, y - 1)
     
+    def is_text_list_filled(self, x, y):
+        return len(self.text_list) > y and len(self.text_list[y]) > x and self.text_list[y][x] != ' '
+
     def fix_joints(self):
         for line_number in range(len(self.text_list) - 1):
             line = self.text_list[line_number]
