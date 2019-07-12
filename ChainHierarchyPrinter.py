@@ -11,7 +11,7 @@ class ChainHierarchyPrinter:
         self.show_nodes_with_one_child = False
         self.show_reference_nodes = True
         self.show_full_branch_names = False
-        self.show_nodes_with_names = True
+        self.show_nodes_with_names = False
         self.show_more_excluded_parent_dots = True
         self.max_excluded_parents_represented = 6
         self.commit_style = ChainHierarchyPrinter.CommitIndicator
