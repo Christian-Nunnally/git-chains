@@ -13,7 +13,7 @@ class ChainHierarchyPrinter:
         self.show_full_branch_names = False
         self.show_nodes_with_names = True
         self.show_more_excluded_parent_dots = True
-        self.align_left = True
+        self.align_left = False
         self.max_excluded_parents_represented = 6
         self.commit_style = ChainHierarchyPrinter.CommitIndicator
         self.parent_style = ChainHierarchyPrinter.HiddenParentIndicator
