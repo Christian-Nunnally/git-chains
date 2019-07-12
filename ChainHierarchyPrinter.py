@@ -77,7 +77,7 @@ class ChainHierarchyPrinter:
             return False
         if not self.show_nodes_with_one_child and (len(node.children) == 1):
             return True
-        return False
+        return False 
 
     def get_formatted_node_name(self, node):
         if (not self.show_full_branch_names):
