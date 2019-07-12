@@ -104,8 +104,10 @@ class ChainRepository():
             for branch in self.local_branches:
                 branch_name = branch.name
                 if (branch_name.startswith("refs/heads/")):
-                    branch_name = branch_name[len("refs/heads/"):] 
-                self.commit_name_map[branch.target.hex] = branch_name
+                    branch_name = branch_name[len("refs/heads/"):]
+                if (not branch.target.hex in self.commit_name_map):
+                    self.commit_name_map[branch.target.hex] = []
+                self.commit_name_map[branch.target.hex].append(branch_name)
         if (commit.hex in self.commit_name_map):
             return self.commit_name_map[commit.hex]
         return '{:7.7}'.format(commit.hex)
@@ -117,7 +119,7 @@ class ChainRepository():
         self.tree = CommitTree()
         master_parent_id = None
         for master_commit in self.master_log:
-            master_commit_name = self.get_commit_name(master_commit)
+            master_commit_name = self.get_combined_branch_name_from_commit(master_commit)
             master_commit_has_name = self.does_commit_have_name(master_commit)
             master_parent_node = self.tree.insert(master_parent_id, master_commit, master_commit_name, master_commit_has_name, True, False)
             master_parent_id = master_parent_node.key
@@ -127,7 +129,7 @@ class ChainRepository():
                 parent_id = master_parent_id
                 for log_item in local_branch_log[1:]:
                     commit = log_item.commit
-                    commit_name = self.get_commit_name(commit)
+                    commit_name = self.get_combined_branch_name_from_commit(commit)
                     commit_has_name = self.does_commit_have_name(commit)
                     if (log_item.fake_parent_id == None):
                         parent_node = self.tree.insert(parent_id, commit, commit_name, commit_has_name, False, log_item.is_reference)
@@ -135,3 +137,12 @@ class ChainRepository():
                         parent_node = self.tree.insert(log_item.fake_parent_id, commit, commit_name, commit_has_name, False, log_item.is_reference)
                     parent_id = parent_node.key
         self.tree.refresh_nodes_staleness_status()
+
+    def get_combined_branch_name_from_commit(self, commit):
+        names = self.get_commit_name(commit)
+        combined_names = ""
+        for name in names:
+            if not name == names[0]:
+                combined_names = combined_names + ", "
+            combined_names = combined_names + name
+        return combined_names
