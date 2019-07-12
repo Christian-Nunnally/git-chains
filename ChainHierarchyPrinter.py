@@ -14,7 +14,7 @@ class ChainHierarchyPrinter:
         self.show_nodes_with_names = True
         self.show_more_excluded_parent_dots = True
         self.align_left = True
-        self.max_excluded_parents_represented = 8
+        self.max_excluded_parents_represented = 6
         self.commit_style = ChainHierarchyPrinter.CommitIndicator
         self.parent_style = ChainHierarchyPrinter.HiddenParentIndicator
 
@@ -67,7 +67,7 @@ class ChainHierarchyPrinter:
         if (excluded_parent_count < self.max_excluded_parents_represented):
             return self.parent_style * excluded_parent_count
         else:
-            return self.parent_style * 3 + "···" + self.parent_style * 2
+            return self.parent_style * 1 + "·"+ str(excluded_parent_count - 2) +"·" + self.parent_style * 1
 
     def should_skip_over_node(self, node):
         if (node.name == "master"):
