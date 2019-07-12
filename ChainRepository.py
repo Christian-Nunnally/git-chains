@@ -99,7 +99,7 @@ class ChainRepository():
                 local_branch_logs_starting_with_commit.append(local_branch_log)
         return local_branch_logs_starting_with_commit
     
-    def get_commit_name(self, commit):
+    def get_commit_names(self, commit):
         if (len(self.commit_name_map) == 0):
             for branch in self.local_branches:
                 branch_name = branch.name
@@ -110,7 +110,7 @@ class ChainRepository():
                 self.commit_name_map[branch.target.hex].append(branch_name)
         if (commit.hex in self.commit_name_map):
             return self.commit_name_map[commit.hex]
-        return '{:7.7}'.format(commit.hex)
+        return ['{:7.7}'.format(commit.hex)]
 
     def does_commit_have_name(self, commit):
         return commit.hex in self.commit_name_map
@@ -139,7 +139,7 @@ class ChainRepository():
         self.tree.refresh_nodes_staleness_status()
 
     def get_combined_branch_name_from_commit(self, commit):
-        names = self.get_commit_name(commit)
+        names = self.get_commit_names(commit)
         combined_names = ""
         for name in names:
             if not name == names[0]:
