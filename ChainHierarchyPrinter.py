@@ -13,7 +13,6 @@ class ChainHierarchyPrinter:
         self.show_full_branch_names = False
         self.show_nodes_with_names = True
         self.show_more_excluded_parent_dots = True
-        self.align_left = False
         self.max_excluded_parents_represented = 6
         self.commit_style = ChainHierarchyPrinter.CommitIndicator
         self.parent_style = ChainHierarchyPrinter.HiddenParentIndicator
@@ -108,50 +107,6 @@ class ChainHierarchyPrinter:
         self.add_header_to_text_list()
         self.extend_pipes_up()
         self.fix_joints()
-        if (self.align_left):
-           self.inline_left_commits()
-
-    def inline_left_commits(self):
-        line_number = 0
-        while(line_number < len(self.text_list) - 2):
-            string_representation_of_line = ''.join(self.text_list[line_number])
-            if "master" in string_representation_of_line and not "master-" in string_representation_of_line:
-                return
-
-            line_number += 1
-            for i in range(len(self.text_list[line_number]) - 1):
-                char_index = i + 1
-                if (self.text_list[line_number][char_index] == '└'):
-                    self.remove_leading_spaces(line_number)
-                    space_count = 0
-                    current_char_index = 0
-                    current_char = self.text_list[line_number - 1][current_char_index]
-                    while(not (current_char == '┐' or current_char == '│')):
-                        current_char = self.text_list[line_number - 1][current_char_index]
-                        if (current_char == self.parent_style or current_char == self.commit_style or current_char == '·' or current_char == '·' or current_char == '─' or current_char == '┐' or current_char == '└' or current_char == ' ' or current_char == '│'):
-                            space_count += 1
-                        current_char_index += 1
-                        if (len(self.text_list[line_number - 1]) <= current_char_index):
-                            break
-
-                    self.text_list.insert(line_number, '┌' + ('─' * (space_count - 2)) +  '┘')
-                    line_number += 1
-                    break
-                elif not self.text_list[line_number][char_index] == ' ':
-                    break
-
-    def remove_leading_spaces(self, line_number):
-        lines = self.text_list[line_number:]
-        removed_spaces = 0
-        for i in range(len(lines)):
-            line = self.text_list[line_number + i]
-            count = 1
-            while(len(line) > 0 and line[0] == ' ' and ((i == 0) or removed_spaces >= count)):
-                count += 1
-                if (i == 0):
-                    removed_spaces += 1
-                line = line[1:]
-            self.text_list[line_number + i] = line
 
     def extend_pipes_up(self):
         for line_number in range(len(self.text_list)):
