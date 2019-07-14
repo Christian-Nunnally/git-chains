@@ -7,6 +7,7 @@ from ChainHierarchyPrinter import ChainHierarchyPrinter
 from BranchChainSuggester import BranchChainSuggester
 from colorama import *
 from Legend import Legend
+from GitCommandPreviewer import GitCommandPreviewer
 
 def __main__():
     init(autoreset=True)
@@ -17,6 +18,7 @@ def __main__():
     parser.add_argument("-r", "--rebase", help="Use the rebase strategy", action="store_true")
     parser.add_argument("-m", "--merge", help="Use the merge strategy", action="store_true")
     parser.add_argument("-s", "--show", help="Show the branch chain tree", action="store_true")
+    parser.add_argument("-p", "--preview", help="Show the branch chain tree", action="store_true")
     parser.add_argument("-d", "--repo", help="Set the location for the local repo", type=str)
     parser.add_argument("-b", "--branch", help="Set the master branch name", type=str)
     args = parser.parse_args()
@@ -54,4 +56,8 @@ def __main__():
     if number_of_branches_specified == 2:
         suggester = BranchChainSuggester(chain_repo)
         suggester.suggest(args.specified_branches, args.rebase, args.merge)
+
+    if args.preview:
+        previewer = GitCommandPreviewer(chain_repo)
+        previewer.preview_command("")
 __main__()
