@@ -5,14 +5,14 @@ class CommitTree:
     root = None
     nodes = {}
 
-    def insert(self, parent_id, commit, pretty_name, has_name, is_part_of_master, is_reference_node):
-        new_node = CommitNode(commit, pretty_name, is_reference_node, has_name)
+    def insert(self, parent_id, commit, pretty_name, has_name, is_part_of_master):
+        new_node = CommitNode(commit, pretty_name, has_name)
         new_node.is_part_of_master = is_part_of_master
 
-        if new_node.key in self.nodes:
-            return self.nodes[new_node.key]
+        if new_node.commit.id in self.nodes:
+            return self.nodes[new_node.commit.id]
 
-        self.nodes[new_node.key] = new_node
+        self.nodes[new_node.commit.id] = new_node
         self.link_child_with_parent(parent_id, new_node)
         if self.root == None:
             self.root = new_node
@@ -41,11 +41,10 @@ class CommitTree:
 
     def get_nodes_with_sub_string_in_name_recursive(self, node, sub_string):
         found_nodes = []
-        if not node.is_reference_node and node.pretty_name == sub_string:
-            return [node]
-        if node.pretty_name.__contains__(sub_string):
-            if (not node.is_reference_node):
-                found_nodes.append(node)
+        if node.pretty_name == sub_string:
+            found_nodes.append(node)
+        if sub_string in node.pretty_name:
+            found_nodes.append(node)
         for child in node.children:
             found_nodes += self.get_nodes_with_sub_string_in_name_recursive(child, sub_string)
         return found_nodes

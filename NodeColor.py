@@ -25,9 +25,7 @@ class NodeColor:
         init(autoreset=True)
         self.node = node
 
-        if node.is_reference_node:
-            self.name_color = NodeColor.ReferenceNodeColor
-        elif node.has_name:
+        if node.has_name:
             self.name_color = NodeColor.NamedNodeColor
         else:
             self.name_color = NodeColor.DefaultNodeColor

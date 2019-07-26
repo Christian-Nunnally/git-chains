@@ -1,0 +1,7 @@
+1. Get all local branch names
+2. Get merge base between all local branches and master
+3. Traverse master until the oldest merge base
+4. Build the tree like you're currently doing but...
+    1. Only traverse first-parent, so that it an accurate tree
+    2. At each commit, get the --merged, if there is a new merged, add it to a list stored in the commit node.
+5. When printing, add the merged names

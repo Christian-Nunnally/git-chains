@@ -73,8 +73,6 @@ class ChainHierarchyPrinter:
             return False
         if self.show_nodes_with_names and node.has_name:
             return False
-        if self.show_reference_nodes and node.is_reference_node:
-            return False
         if not self.show_nodes_with_one_child and (len(node.children) == 1):
             return True
         return False
