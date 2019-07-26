@@ -37,7 +37,6 @@ class CommitTreeToGitCommandDecoder:
         preview_repo = ChainRepository(temp_dir.name + "\\.git", "master")
         preview_printer = ChainHierarchyPrinter(preview_repo)
         preview_printer.print()
-        shutil.rmtree(temp_dir.name)
 
     def recursivly_generate_git_commands(self, current_commit, f):
         unique_id = self.get_unique_id()
