@@ -6,6 +6,7 @@ from pygit2 import *
 from CommitTree import CommitTree
 from CommitNode import CommitNode
 from ChainRepository import ChainRepository
+from ChainHierarchyPrinter import ChainHierarchyPrinter
 import random
 
 class CommitTreeToGitCommandDecoder:
@@ -18,6 +19,7 @@ class CommitTreeToGitCommandDecoder:
         temp_dir = tempfile.TemporaryDirectory()
         f = open(temp_dir.name + "\\repo-init.ps1", "x")
 
+        print("cd " + temp_dir.name, file=f)
         print("Invoke-Expression \"git init\"", file=f)
         print("New-Item temp.txt", file=f)
         self.recursivly_generate_git_commands(self.root, f)
