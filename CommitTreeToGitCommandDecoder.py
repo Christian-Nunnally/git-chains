@@ -1,4 +1,7 @@
-
+import subprocess
+import sys
+import tempfile
+import shutil
 from pygit2 import *
 from CommitTree import CommitTree
 from CommitNode import CommitNode
@@ -11,28 +14,49 @@ class CommitTreeToGitCommandDecoder:
         self.id = 0
 
     def recursivly_generate_git_commands_entry(self):
-        print("Invoke-Expression \"git init\"")
-        self.recursivly_generate_git_commands(self.root)
+        temp_dir = tempfile.TemporaryDirectory()
+        f = open(temp_dir.name + "\\repo-init.ps1", "x")
 
-    def recursivly_generate_git_commands(self, current_commit):
+        print("Invoke-Expression \"git init\"", file=f)
+        print("New-Item temp.txt", file=f)
+        self.recursivly_generate_git_commands(self.root, f)
+        print("Invoke-Expression \"git checkout real-master\"", file=f)
+        print("Invoke-Expression \"git branch -D master\"", file=f)
+        print("Invoke-Expression \"git checkout -b master\"", file=f)
+        print("Invoke-Expression \"git branch -D real-master\"", file=f)
+
+        f.close()
+        p = subprocess.Popen(["powershell.exe", 
+                    temp_dir.name + "\\repo-init.ps1"], 
+                    stdout=sys.stdout)
+        p.communicate()
+
+        preview_repo = ChainRepository(temp_dir + "\\.git", "master")
+        preview_printer = ChainHierarchyPrinter(preview_repo)
+        preview_printer.print()
+        shutil.rmtree(temp_dir.name)
+
+    def recursivly_generate_git_commands(self, current_commit, f):
         unique_id = self.get_unique_id()
         commit = "$temp%s" % unique_id
 
-        print("New-Item temp%s.txt" % random.randint(1000000000, 9999999999))
-        print("Invoke-Expression \"git add .\"")
-        print("Invoke-Expression \"git commit -m 'commit for " + current_commit.pretty_name + "'\"")
-        print(commit + " = Invoke-Expression \"git log --format='%H' -n 1\"")
+        print("Add-Content -Path temp.txt -Value ' '", file=f)
+        # print("New-Item temp%s.txt" % random.randint(1000000000, 9999999999))
+        print("Invoke-Expression \"git stage .\"", file=f)
+        print("Invoke-Expression \"git commit -m 'commit for " + current_commit.pretty_name + "'\"", file=f)
+        print(commit + " = Invoke-Expression \"git log --format='%H' -n 1\"", file=f)
         
         if current_commit.has_name:
             branch_name = current_commit.pretty_name
             if branch_name == "master":
                 branch_name = "real-master"
-            print("Invoke-Expression \"git branch %s\"" % current_commit.pretty_name)
+            print("Invoke-Expression \"git branch %s\"" % branch_name, file=f)
 
         for child in current_commit.children:
-            self.recursivly_generate_git_commands(child)
+            self.recursivly_generate_git_commands(child, f)
+            print("Invoke-Expression \"git checkout " + commit + "\"", file=f)
 
-        print("Invoke-Expression \"git checkout " + commit + "\"")
+        print("Invoke-Expression \"git checkout " + commit + "\"", file=f)
     
     def get_unique_id(self):
         self.id += 1
