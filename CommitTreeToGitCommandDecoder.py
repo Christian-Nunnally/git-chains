@@ -5,6 +5,7 @@ import shutil
 from pygit2 import *
 from CommitTree import CommitTree
 from CommitNode import CommitNode
+from ChainRepository import ChainRepository
 import random
 
 class CommitTreeToGitCommandDecoder:
