@@ -32,7 +32,7 @@ class CommitTreeToGitCommandDecoder:
                     stdout=sys.stdout)
         p.communicate()
 
-        preview_repo = ChainRepository(temp_dir + "\\.git", "master")
+        preview_repo = ChainRepository(temp_dir.name + "\\.git", "master")
         preview_printer = ChainHierarchyPrinter(preview_repo)
         preview_printer.print()
         shutil.rmtree(temp_dir.name)
