@@ -10,10 +10,8 @@ class GitCommandPreviewer:
     def __init__(self, repo):
         self.repo = repo
 
-    def preview_command(self, command):
-        preview_repo_directory = tempfile.gettempdir()
-        preview_repo = repo = init_repository(preview_repo_directory)
+    def preview_command(self, command, skip_single_child_nodes):
         decoder = CommitTreeToGitCommandDecoder(self.repo.tree)
-        decoder.recursivly_generate_git_commands_entry()
+        decoder.recursivly_generate_git_commands_entry(command, skip_single_child_nodes)
 
 
