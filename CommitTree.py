@@ -48,20 +48,3 @@ class CommitTree:
         for child in node.children:
             found_nodes += self.get_nodes_with_sub_string_in_name_recursive(child, sub_string)
         return found_nodes
-
-    def refresh_nodes_staleness_status(self):
-        self.refresh_nodes_staleness_status_recursive(self.root)
-
-    def refresh_nodes_staleness_status_recursive(self, node):
-        node.is_stale = False
-        if not node.parent == None and not node.parent.is_part_of_master:
-            if node.parent.is_stale:
-                node.is_stale = True
-            else:
-                for sibling in node.parent.children:
-                    if (not sibling == node):
-                        if (sibling.commit.commit_time < node.commit.commit_time):
-                            node.is_stale = True
-                            break
-        for child in node.children:
-            self.refresh_nodes_staleness_status_recursive(child)

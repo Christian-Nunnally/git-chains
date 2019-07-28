@@ -29,8 +29,7 @@ class ChainHierarchyPrinter:
             print(line)
     
     def build_text_list(self):
-        start_node = self.tree.root
-        self.build_text_list_recursively(start_node, 0, False)
+        self.build_text_list_recursively(self.tree.root, 0, False)
 
     def build_text_list_recursively(self, node, left_spaces, excluded_parent_count):
         if self.should_skip_over_node(node):
@@ -55,6 +54,12 @@ class ChainHierarchyPrinter:
         self.text_list.append(line)
 
         for child in sorted_children:
+            # if self.should_skip_over_node(child):
+            #     while self.should_skip_over_node(child):
+            #         child = child.children[0]
+            #         excluded_parent_count += 1
+            #     self.build_text_list_recursively(child, left_spaces, excluded_parent_count)
+            # else:
             self.build_text_list_recursively(child, left_spaces + 3 + len(excluded_parent_dots), 0)
         self.add_vertical_whitespace_if_needed()
 

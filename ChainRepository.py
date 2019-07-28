@@ -39,13 +39,15 @@ class ChainRepository():
 
     def generate_local_branch_logs_to_master(self):
         for local_branch in self.local_branches:
-            branch_log_to_master = self.generate_branch_log_to_master(local_branch)
-            self.local_branch_logs_to_master.append(branch_log_to_master)
+            if not local_branch == self.master_branch_name:
+                branch_log_to_master = self.generate_branch_log_to_master(local_branch)
+                self.local_branch_logs_to_master.append(branch_log_to_master)
 
     def generate_branch_log_to_master(self, branch):
         commit = self.repo.get(branch.target)
         merge_base = self.get_merge_base_with_master(commit)
-        self.local_branch_merge_bases_with_master.append(merge_base)
+        if not merge_base in self.local_branch_merge_bases_with_master:
+            self.local_branch_merge_bases_with_master.append(merge_base)
 
         branch_log_to_master = []
         for commit in self.walk_first_parent(branch.target):
@@ -95,8 +97,6 @@ class ChainRepository():
                     for commit in local_branch_log[1:]:
                         node = self.insert_commit_into_tree(commit, parent_id, False)
                         parent_id = node.commit.id
-
-        self.tree.refresh_nodes_staleness_status()
 
     def get_local_branch_logs_starting_at_commit(self, start_commit):
         local_branch_logs_from_commit = []

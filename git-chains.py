@@ -10,6 +10,7 @@ from Legend import Legend
 from GitCommandPreviewer import GitCommandPreviewer
 
 def __main__():
+    sys.setrecursionlimit(3000)
     init(autoreset=True)
 
     parser = argparse.ArgumentParser(description='Process some integers.')
