@@ -1,0 +1,21 @@
+from CommitTreeToScriptConverter import CommitTreeToScriptConverter
+from PowerShellScriptExecuter import PowerShellScriptExecuter
+
+class GitRepositoryCopier:
+    
+    def __init__(self, tree):
+        self.tree = tree
+        self.id = 0
+
+    def copy_repository(self, temp_dir, command, skip_single_child_nodes):
+        script_file_path = temp_dir + "\\repo-init.ps1"
+        script_file = open(script_file_path, "x")
+
+        scriptWriter = CommitTreeToScriptConverter()
+        scriptWriter.skip_single_child_nodes = skip_single_child_nodes
+        scriptWriter.convert_commit_tree_to_script(self.tree, script_file, [command])
+
+        script_file.close()
+        print(script_file_path)
+        executer = PowerShellScriptExecuter()
+        executer.execute(script_file_path)
