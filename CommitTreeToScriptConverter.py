@@ -38,7 +38,7 @@ class CommitTreeToScriptConverter:
 
         commit = "$temp%s" % str(uuid.uuid4()).replace("-", "")
 
-        print("Add-Content -Path temp.txt -Value ' '", file=script_file)
+        print("Add-Content -Path temp.txt -Value '%s'" % commit, file=script_file)
         print("Invoke-Expression \"git commit -q -a -m 'commit for " + current_commit.pretty_name + "'\"", file=script_file)
         print(commit + " = Invoke-Expression \"git log --format='%H' -n 1\"", file=script_file)
         
