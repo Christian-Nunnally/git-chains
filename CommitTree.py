@@ -6,6 +6,8 @@ class CommitTree:
     nodes = {}
 
     def insert(self, parent_id, commit, pretty_name, has_name, is_part_of_master):
+        if (has_name):
+            print(pretty_name)
         new_node = CommitNode(commit, pretty_name, has_name)
         new_node.is_part_of_master = is_part_of_master
 

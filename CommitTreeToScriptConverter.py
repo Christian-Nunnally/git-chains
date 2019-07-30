@@ -17,9 +17,11 @@ class CommitTreeToScriptConverter:
         self.skip_single_child_nodes = False
 
     def convert_commit_tree_to_script(self, commit_tree_to_copy, script_file, commands_to_add):
-        temp_dir = os.path.realpath(script_file.name)
+        temp_dir = os.path.dirname(script_file.name)
 
+        print("cd " + temp_dir)
         print("cd " + temp_dir, file=script_file)
+
         print("Invoke-Expression \"git init\"", file=script_file)
         print("New-Item temp.txt", file=script_file)
         self.recursivly_generate_git_commands(commit_tree_to_copy.root, script_file)

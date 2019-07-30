@@ -39,7 +39,8 @@ class ChainRepository():
 
     def generate_local_branch_logs_to_master(self):
         for local_branch in self.local_branches:
-            if not local_branch == self.master_branch_name:
+            if not local_branch.name.endswith(self.master_branch_name):
+                print(local_branch.name)
                 branch_log_to_master = self.generate_branch_log_to_master(local_branch)
                 self.local_branch_logs_to_master.append(branch_log_to_master)
 
