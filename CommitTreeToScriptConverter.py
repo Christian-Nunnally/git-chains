@@ -22,6 +22,7 @@ class CommitTreeToScriptConverter:
 
         print("Invoke-Expression \"git init\"", file=script_file)
         print("New-Item temp.txt", file=script_file)
+        print("Invoke-Expression \"git add .\"", file=script_file)
         self.recursivly_generate_git_commands(commit_tree_to_copy.root, script_file)
         print("Invoke-Expression \"git checkout real-master\"", file=script_file)
         print("Invoke-Expression \"git branch -D master\"", file=script_file)
@@ -38,8 +39,7 @@ class CommitTreeToScriptConverter:
         commit = "$temp%s" % str(uuid.uuid4()).replace("-", "")
 
         print("Add-Content -Path temp.txt -Value ' '", file=script_file)
-        print("Invoke-Expression \"git stage .\"", file=script_file)
-        print("Invoke-Expression \"git commit -q -m 'commit for " + current_commit.pretty_name + "'\"", file=script_file)
+        print("Invoke-Expression \"git commit -q -a -m 'commit for " + current_commit.pretty_name + "'\"", file=script_file)
         print(commit + " = Invoke-Expression \"git log --format='%H' -n 1\"", file=script_file)
         
         if current_commit.has_name:
