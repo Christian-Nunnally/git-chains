@@ -8,7 +8,7 @@ class ChainHierarchyPrinter:
 
     def __init__(self, chain_repo):
         self.vertical_white_space_between_chains_off_master = True
-        self.show_nodes_with_one_child = False
+        self.show_nodes_with_one_child = True
         self.show_reference_nodes = True
         self.show_full_branch_names = False
         self.show_nodes_with_names = True
@@ -40,7 +40,6 @@ class ChainHierarchyPrinter:
         sorted_children = self.sorted_children(node.children)
 
         current_branch_name = self.repo.head.name.split('/')[-1]
-        print(current_branch_name)
 
         color = NodeColor(node, current_branch_name)
         node_name = self.get_formatted_node_name(node)
@@ -59,13 +58,13 @@ class ChainHierarchyPrinter:
         self.text_list.append(line)
 
         for child in sorted_children:
-            # if self.should_skip_over_node(child):
-            #     while self.should_skip_over_node(child):
-            #         child = child.children[0]
-            #         excluded_parent_count += 1
-            #     self.build_text_list_recursively(child, left_spaces, excluded_parent_count)
-            # else:
-            self.build_text_list_recursively(child, left_spaces + 3 + len(excluded_parent_dots), 0)
+            if self.should_skip_over_node(child):
+                while self.should_skip_over_node(child):
+                    child = child.children[0]
+                    excluded_parent_count += 1
+                self.build_text_list_recursively(child, left_spaces, excluded_parent_count)
+            else:
+                self.build_text_list_recursively(child, left_spaces + 3 + len(excluded_parent_dots), 0)
         self.add_vertical_whitespace_if_needed()
 
     def get_excluded_parent_dots(self, excluded_parent_count):
