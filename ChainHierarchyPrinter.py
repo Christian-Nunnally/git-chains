@@ -8,7 +8,7 @@ class ChainHierarchyPrinter:
 
     def __init__(self, chain_repo):
         self.vertical_white_space_between_chains_off_master = True
-        self.show_nodes_with_one_child = True
+        self.show_nodes_with_one_child = False
         self.show_reference_nodes = True
         self.show_full_branch_names = False
         self.show_nodes_with_names = True
@@ -23,7 +23,7 @@ class ChainHierarchyPrinter:
         self.text_list = []
 
     def print(self):
-        self.text_list = []
+        self.text_list = [] 
         self.build_text_list()
         self.decorate_text_list()
         for line in self.text_list:
