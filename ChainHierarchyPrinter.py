@@ -19,6 +19,7 @@ class ChainHierarchyPrinter:
 
         self.tree = chain_repo.tree
         self.master_log = chain_repo.master_log
+        self.repo = chain_repo.repo
         self.text_list = []
 
     def print(self):
@@ -37,7 +38,11 @@ class ChainHierarchyPrinter:
             return
             
         sorted_children = self.sorted_children(node.children)
-        color = NodeColor(node)
+
+        current_branch_name = self.repo.head.name.split('/')[-1]
+        print(current_branch_name)
+
+        color = NodeColor(node, current_branch_name)
         node_name = self.get_formatted_node_name(node)
         commit_dot = color.status_color + self.commit_style + color.reset
         excluded_parent_dots = self.get_excluded_parent_dots(excluded_parent_count)

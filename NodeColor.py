@@ -10,6 +10,7 @@ from CommitNode import CommitNode
 class NodeColor:
     ReferenceNodeColor = Fore.LIGHTBLACK_EX
     NamedNodeColor = Fore.LIGHTBLUE_EX
+    HighlightedNodeColor = Fore.LIGHTGREEN_EX
     DefaultNodeColor = Fore.WHITE
 
     StaleStatusColor = Fore.YELLOW + Style.NORMAL
@@ -21,12 +22,14 @@ class NodeColor:
     status_color = Fore.RED
     reset = Fore.RESET
 
-    def __init__(self, node):
+    def __init__(self, node, highlight_string):
         init(autoreset=True)
         self.node = node
 
         if node.has_name:
             self.name_color = NodeColor.NamedNodeColor
+            if (highlight_string in node.pretty_name):
+                self.name_color = NodeColor.HighlightedNodeColor
         else:
             self.name_color = NodeColor.DefaultNodeColor
 
