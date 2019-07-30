@@ -5,7 +5,6 @@ import shutil
 import os
 import stat
 import uuid
-from pygit2 import *
 from CommitTree import CommitTree
 from CommitNode import CommitNode
 from ChainRepository import ChainRepository
@@ -19,7 +18,6 @@ class CommitTreeToScriptConverter:
     def convert_commit_tree_to_script(self, commit_tree_to_copy, script_file, commands_to_add):
         temp_dir = os.path.dirname(script_file.name)
 
-        print("cd " + temp_dir)
         print("cd " + temp_dir, file=script_file)
 
         print("Invoke-Expression \"git init\"", file=script_file)

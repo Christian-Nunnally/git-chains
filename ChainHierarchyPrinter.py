@@ -8,7 +8,7 @@ class ChainHierarchyPrinter:
 
     def __init__(self, chain_repo):
         self.vertical_white_space_between_chains_off_master = True
-        self.show_nodes_with_one_child = False
+        self.show_nodes_with_one_child = True
         self.show_reference_nodes = True
         self.show_full_branch_names = False
         self.show_nodes_with_names = True

@@ -6,8 +6,6 @@ class CommitTree:
     nodes = {}
 
     def insert(self, parent_id, commit, pretty_name, has_name, is_part_of_master):
-        if (has_name):
-            print(pretty_name)
         new_node = CommitNode(commit, pretty_name, has_name)
         new_node.is_part_of_master = is_part_of_master
 
@@ -25,18 +23,6 @@ class CommitTree:
             parent_node = self.nodes[parent_id]
             parent_node.add(child)
             child.parent = parent_node
-
-    def print_tree(self):
-        self.print_node(self.root)
-
-    def print_node(self, node):
-        if node == None:
-            return
-        print(node.name)
-        print(len(node.children))
-        for child in node.children:
-            if (child != node):
-                self.print_node(child)
     
     def get_nodes_with_sub_string_in_name(self, sub_string):
         return self.get_nodes_with_sub_string_in_name_recursive(self.root, sub_string)

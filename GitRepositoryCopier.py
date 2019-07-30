@@ -16,6 +16,5 @@ class GitRepositoryCopier:
         scriptWriter.convert_commit_tree_to_script(self.tree, script_file, [command])
 
         script_file.close()
-        print(script_file_path)
         executer = PowerShellScriptExecuter()
         executer.execute(script_file_path)
