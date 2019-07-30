@@ -158,6 +158,3 @@ class ChainHierarchyPrinter:
         self.text_list.insert(0, '.')
         self.text_list.insert(1, '¦')
         self.text_list.insert(2, '¦')
-
-    def silly_function(self):
-        pass

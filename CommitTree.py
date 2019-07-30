@@ -36,6 +36,3 @@ class CommitTree:
         for child in node.children:
             found_nodes += self.get_nodes_with_sub_string_in_name_recursive(child, sub_string)
         return found_nodes
-
-    def lalala(self):
-        pass
