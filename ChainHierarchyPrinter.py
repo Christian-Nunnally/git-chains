@@ -23,6 +23,7 @@ class ChainHierarchyPrinter:
         self.text_list = []
 
     def print(self):
+        print()
         self.text_list = [] 
         self.build_text_list()
         self.decorate_text_list()
@@ -33,39 +34,34 @@ class ChainHierarchyPrinter:
         self.build_text_list_recursively(self.tree.root, 0, False)
 
     def build_text_list_recursively(self, node, left_spaces, excluded_parent_count):
-        if self.should_skip_over_node(node):
-            self.build_text_list_recursively(node.children[0], left_spaces, excluded_parent_count + 1)
-            return
-            
         sorted_children = self.sorted_children(node.children)
-
-        current_branch_name = self.repo.head.name.split('/')[-1]
-
-        color = NodeColor(node, current_branch_name)
-        node_name = self.get_formatted_node_name(node)
-        commit_dot = color.status_color + self.commit_style + color.reset
         excluded_parent_dots = self.get_excluded_parent_dots(excluded_parent_count)
-        formatted_excluded_parents_dots = color.omitted_parent + excluded_parent_dots + color.reset
         
-        line = color.name_color + node_name
-        line = ' ' + line
-        if (len(sorted_children) > 0):
-            line = '─┐' + line
-        line = commit_dot + line
-        line = formatted_excluded_parents_dots + line
-        line = '└' + line
-        line = ' ' * left_spaces + line
+        line = self.build_basic_string_node_representation(node, left_spaces, excluded_parent_dots)
         self.text_list.append(line)
 
         for child in sorted_children:
-            if self.should_skip_over_node(child):
-                 while self.should_skip_over_node(child):
-                     child = child.children[0]
-                     excluded_parent_count += 1
-                 self.build_text_list_recursively(child, left_spaces, excluded_parent_count)
-            else:
-                self.build_text_list_recursively(child, left_spaces + 3 + len(excluded_parent_dots), 0)
+            excluded_parent_count = 0
+            while self.should_skip_over_node(child):
+                child = child.children[0]
+                excluded_parent_count += 1
+            self.build_text_list_recursively(child, left_spaces + 3 + len(excluded_parent_dots), excluded_parent_count)
         self.add_vertical_whitespace_if_needed()
+
+    def build_basic_string_node_representation(self, node, left_spaces, excluded_parent_dots):
+        current_branch_name = self.repo.head.name.split('/')[-1]
+        color = NodeColor(node, current_branch_name)
+        colored_node_name = color.name_color + self.get_formatted_node_name(node)
+        commit_dot = color.status_color + self.commit_style + color.reset
+        formatted_excluded_parents_dots = color.omitted_parent + excluded_parent_dots + color.reset
+        has_children_symbol = self.get_has_children_symbol(node)
+        line = "%s└%s%s%s %s" % (' ' * left_spaces, formatted_excluded_parents_dots, commit_dot, has_children_symbol, colored_node_name)
+        return line
+
+    def get_has_children_symbol(self, node):
+        if len(node.children) > 0:
+            return "─┐"
+        return ""
 
     def get_excluded_parent_dots(self, excluded_parent_count):
         if (excluded_parent_count <= 0):

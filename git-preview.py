@@ -24,8 +24,6 @@ def __main__():
     elif os.path.exists("./.git"):
         local_repo_name = os.getcwd() + "\\.git"
 
-    print()
-    
     master_branch_name = "master"
     if args.branch:
         master_branch_name = args.branch
