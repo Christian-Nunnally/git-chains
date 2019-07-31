@@ -18,9 +18,6 @@ def __main__():
     parser.add_argument("-l", "--legend", help="Print out help", action="store_true")
     parser.add_argument("-r", "--rebase", help="Use the rebase strategy", action="store_true")
     parser.add_argument("-m", "--merge", help="Use the merge strategy", action="store_true")
-    parser.add_argument("-s", "--show", help="Show the branch chain tree", action="store_true")
-    parser.add_argument("-p", "--preview", help="Show the branch chain tree", action="store_true")
-    parser.add_argument("-q", "--quick", help="Speed up the preview", action="store_true")
     parser.add_argument("-d", "--repo", help="Set the location for the local repo", type=str)
     parser.add_argument("-b", "--branch", help="Set the master branch name", type=str)
     args = parser.parse_args()
@@ -49,18 +46,6 @@ def __main__():
         return
 
     chain_repo = ChainRepository(local_repo_name, master_branch_name)
-
-    if args.preview:
-        previewer = GitCommandPreviewer(chain_repo)
-        command = ""
-        if len(args.specified_branches) == 1:
-            command = args.specified_branches[0]
-        previewer.preview_command(command, args.quick)
-        return
-
-    if args.show:
-        printer = ChainHierarchyPrinter(chain_repo)
-        printer.print()
 
     if number_of_branches_specified == 2:
         suggester = BranchChainSuggester(chain_repo)
