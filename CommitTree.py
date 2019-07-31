@@ -1,4 +1,3 @@
-from pygit2 import *
 from CommitNode import CommitNode
 
 class CommitTree:
