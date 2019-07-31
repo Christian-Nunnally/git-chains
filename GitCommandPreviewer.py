@@ -7,15 +7,16 @@ import stat
 
 class GitCommandPreviewer:
 
-    def __init__(self, repo):
+    def __init__(self, repo, local_branches_to_include = []):
         self.repo = repo
+        self.local_branches_to_include = local_branches_to_include
 
     def preview_command(self, command, skip_single_child_nodes):
         with tempfile.TemporaryDirectory() as temp_dir:
             copier = GitRepositoryCopier(self.repo.tree)
             copier.copy_repository(temp_dir, command, skip_single_child_nodes)
 
-            preview_repo = ChainRepository(temp_dir + "\\.git", "master")
+            preview_repo = ChainRepository(temp_dir + "\\.git", "master", self.local_branches_to_include)
             preview_printer = ChainHierarchyPrinter(preview_repo)
             preview_printer.print()
             preview_repo.repo.free()

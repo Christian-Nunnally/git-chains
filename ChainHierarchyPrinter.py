@@ -23,7 +23,6 @@ class ChainHierarchyPrinter:
         self.text_list = []
 
     def print(self):
-        print()
         self.text_list = [] 
         self.build_text_list()
         self.decorate_text_list()

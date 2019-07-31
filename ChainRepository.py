@@ -4,7 +4,7 @@ from CommitNode import CommitNode
 from CommitTree import CommitTree
 
 class ChainRepository():
-    def __init__(self, repo_path, master_branch_name):
+    def __init__(self, repo_path, master_branch_name, local_branches_to_include = []):
         self.tree = None
         self.repo = Repository(repo_path)
         self.master_branch_name = master_branch_name
@@ -15,6 +15,7 @@ class ChainRepository():
         self.master_branch = None
         self.commit_name_map = {}
         self.local_branch_merge_bases_with_master = []
+        self.local_branches_to_include = local_branches_to_include
 
         # the order that these initialization methods are called matters.
         self.initialize_branches()
@@ -24,7 +25,8 @@ class ChainRepository():
 
     def initialize_branches(self):
         for local_branch_name in self.repo.branches.local:
-            self.local_branches.append(self.repo.branches[local_branch_name])
+            if len(self.local_branches_to_include) == 0 or local_branch_name == "master" or local_branch_name == "master-real" or local_branch_name in self.local_branches_to_include:
+                self.local_branches.append(self.repo.branches[local_branch_name])
         self.master_branch = self.repo.branches[self.master_branch_name]
 
     def generate_master_log(self):

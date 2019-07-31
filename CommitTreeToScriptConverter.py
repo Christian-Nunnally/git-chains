@@ -19,7 +19,7 @@ def convert_master_to_real_master_string(string):
 class CommitTreeToScriptConverter:
     def __init__(self):
         self.skip_single_child_nodes = False
-        self.print_debug = True
+        self.print_debug = False
 
     def convert_commit_tree_to_script(self, commit_tree_to_copy, script_file, commands_to_add):
         temp_dir = os.path.dirname(script_file.name)
