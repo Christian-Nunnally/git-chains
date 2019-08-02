@@ -72,7 +72,7 @@ class ChainRepository():
         return walker
 
     def get_commit_names(self, commit):
-        if (len(self.commit_name_map) == 0):
+        if (len(self.commit_name_map) == 0): 
             for branch in self.local_branches:
                 branch_name = branch.name
                 if (branch_name.startswith("refs/heads/")):
