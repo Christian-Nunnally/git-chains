@@ -45,10 +45,10 @@ class CommitTreeToScriptConverter:
         self.print_to_file(commit + " = Invoke-Expression \"git log --format='%H' -n 1\"", script_file)
         
         if current_commit.has_name:
-            branch_name = current_commit.pretty_name
-            if branch_name == "master":
-                branch_name = "master-real"
-            self.print_to_file("Invoke-Expression \"git branch %s\"" % branch_name, script_file)
+            for branch_name in current_commit.pretty_name.split(' '):
+                if branch_name == "master":
+                    branch_name = "master-real"
+                self.print_to_file("Invoke-Expression \"git branch %s\"" % branch_name.replace(',', ''), script_file)
 
         for child in current_commit.children:
             self.recursivly_generate_git_commands(child, script_file)
