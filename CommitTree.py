@@ -22,7 +22,7 @@ class CommitTree:
         if parent_id != None:
             parent_node = self.nodes[parent_id]
             parent_node.add(child)
-            child.parent = parent_node
+            child.parent = parent_node 
     
     def get_nodes_with_sub_string_in_name(self, sub_string):
         return self.get_nodes_with_sub_string_in_name_recursive(self.root, sub_string)
