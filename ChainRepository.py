@@ -48,6 +48,8 @@ class ChainRepository():
     def generate_branch_log_to_master(self, branch):
         commit = self.repo.get(branch.target)
         merge_base = self.get_merge_base_with_master(commit)
+        print(branch.name)
+        print(merge_base)
         if not merge_base in self.local_branch_merge_bases_with_master:
             self.local_branch_merge_bases_with_master.append(merge_base)
 
@@ -55,6 +57,7 @@ class ChainRepository():
         for commit in self.walk_first_parent(branch.target):
             branch_log_to_master.append(commit)
             if commit.hex == merge_base.hex:
+                print("yup")
                 break
         branch_log_to_master.reverse()
         return branch_log_to_master
