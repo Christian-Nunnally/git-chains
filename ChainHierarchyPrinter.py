@@ -73,7 +73,7 @@ class ChainHierarchyPrinter:
             return self.parent_style * 1 + "·"+ str(excluded_parent_count - 2) +"·" + self.parent_style * 1
 
     def should_skip_over_node(self, node):
-        if ("master" in node.pretty_name):
+        if ("master" in node.pretty_name): 
             return False
         if self.show_nodes_with_names and node.has_name:
             return False
