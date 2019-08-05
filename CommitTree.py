@@ -39,4 +39,4 @@ class CommitTree:
 
     def populate_merged_branches(self, node):
         merged_branches_output = subprocess.run(['git', 'branch', ''], stdout=subprocess.PIPE).stdout.decode('utf-8')
-        print(merged_branches_output)
+        print(merged_branches_output) 
