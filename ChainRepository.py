@@ -2,6 +2,7 @@ from pygit2 import *
 from ChainHierarchyPrinter import ChainHierarchyPrinter
 from CommitNode import CommitNode
 from CommitTree import CommitTree
+import subprocess
 
 class ChainRepository():
     def __init__(self, repo_path, master_branch_name, local_branches_to_include = []):
@@ -52,7 +53,11 @@ class ChainRepository():
             self.local_branch_merge_bases_with_master.append(merge_base)
 
         branch_log_to_master = []
-        for commit in self.walk_first_parent(branch.target):
+
+        for commit in self.walk_from_branch(branch.target):
+            is_ancestor = subprocess.call(['git', 'merge-base', '--is-ancestor', commit.hex, merge_base.hex])
+            if (is_ancestor):
+                print(commit.hex + " : " + merge_base.hex)
             branch_log_to_master.append(commit)
             if commit.hex == merge_base.hex:
                 break
@@ -66,6 +71,10 @@ class ChainRepository():
     def walk_first_parent(self, branch):
         walker = self.repo.walk(branch, GIT_SORT_TOPOLOGICAL)
         walker.simplify_first_parent()
+        return walker
+
+    def walk_from_branch(self, branch):
+        walker = self.repo.walk(branch, GIT_SORT_TOPOLOGICAL)
         return walker
 
     def get_commit_names(self, commit):
