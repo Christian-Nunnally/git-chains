@@ -1,5 +1,6 @@
 from CommitTree import CommitTree
 from NodeColor import NodeColor
+from colorama import *
 import os
 
 class ChainHierarchyPrinter:
@@ -36,6 +37,15 @@ class ChainHierarchyPrinter:
         sorted_children = self.sorted_children(node.children)
         excluded_parent_dots = self.get_excluded_parent_dots(excluded_parent_count)
         
+        for merged_branch_name in node.merged_branch_names:
+            if (merged_branch_name == node.pretty_name):
+                continue
+            colored_node_name = Fore.LIGHTBLACK_EX + self.get_formatted_name(merged_branch_name)
+            commit_dot = Fore.LIGHTBLACK_EX + self.commit_style + Fore.RESET
+            line = "%s└%s─┐ %s" % (' ' * left_spaces, commit_dot, colored_node_name)
+            self.text_list.append(line)
+            left_spaces += 3
+
         line = self.build_basic_string_node_representation(node, left_spaces, excluded_parent_dots)
         self.text_list.append(line)
 
@@ -82,9 +92,12 @@ class ChainHierarchyPrinter:
         return False 
 
     def get_formatted_node_name(self, node):
+        return self.get_formatted_name(node.pretty_name)
+
+    def get_formatted_name(self, name):
         if (not self.show_full_branch_names):
-            return os.path.basename(node.pretty_name)
-        return node.pretty_name
+            return os.path.basename(name)
+        return name
 
     def add_vertical_whitespace_if_needed(self):
         if (self.vertical_white_space_between_chains_off_master):
