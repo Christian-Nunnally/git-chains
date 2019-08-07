@@ -32,12 +32,15 @@ class ChainRepository():
 
     def generate_master_log(self):
         commit_hexs_to_find = list([i.hex for i in self.local_branch_merge_bases_with_master])
-        for commit in self.walk_first_parent(self.master_branch.target):
+        for commit in self.walk_from_branch(self.master_branch.target):
             self.master_log.append(commit)
             if commit.hex in commit_hexs_to_find:
                 commit_hexs_to_find.remove(commit.hex)
             if len(commit_hexs_to_find) == 0:
+                print("Hello")
                 break
+        for x in commit_hexs_to_find:
+            print("chtf: " + x)
         self.master_log.reverse()
 
     def generate_local_branch_logs_to_master(self):

@@ -46,7 +46,6 @@ class CommitTree:
         result = []
         for merged_branch in merged_branches:
             if merged_branch != "*":
-                print(merged_branch)
                 result.append(merged_branch)
 
         node.merged_branch_names = result
