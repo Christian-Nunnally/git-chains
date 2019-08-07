@@ -74,7 +74,7 @@ class ChainRepository():
         return walker
 
     def walk_from_branch(self, branch):
-        walker = self.repo.walk(branch, GIT_SORT_TOPOLOGICAL)
+        walker = self.repo.walk(branch, GIT_SORT_TOPOLOGICAL) 
         return walker
 
     def get_commit_names(self, commit):
