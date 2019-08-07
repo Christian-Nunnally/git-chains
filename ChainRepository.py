@@ -132,3 +132,7 @@ class ChainRepository():
                 combined_names = combined_names + ", "
             combined_names = combined_names + name
         return combined_names
+
+# 1. git merge-base --octopus A B C D
+# 2. walk all branches back to the best merge base
+# 3. add to trees
