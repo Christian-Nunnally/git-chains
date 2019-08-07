@@ -34,7 +34,7 @@ class ChainRepository():
         commit_hexs_to_find = list([i.hex for i in self.local_branch_merge_bases_with_master])
         for commit in self.walk_from_branch(self.master_branch.target):
             self.master_log.append(commit)
-            if commit.hex in commit_hexs_to_find:
+            if commit.hex in commit_hexs_to_find: 
                 commit_hexs_to_find.remove(commit.hex)
             if len(commit_hexs_to_find) == 0:
                 print("Hello")
