@@ -31,21 +31,24 @@ class ChainHierarchyPrinter:
             print(line)
     
     def build_text_list(self):
-        self.build_text_list_recursively(self.tree.root, 0, False)
+        self.build_text_list_recursively(self.tree.root, 0, False, [])
 
-    def build_text_list_recursively(self, node, left_spaces, excluded_parent_count):
+    def build_text_list_recursively(self, node, left_spaces, excluded_parent_count, parent_branch_names):
+        parent_branch_names = list(parent_branch_names)
         sorted_children = self.sorted_children(node.children)
         excluded_parent_dots = self.get_excluded_parent_dots(excluded_parent_count)
         
         for merged_branch_name in node.merged_branch_names:
-            if (merged_branch_name == node.pretty_name):
+            if (merged_branch_name == node.pretty_name or merged_branch_name in parent_branch_names):
                 continue
+            parent_branch_names.append(merged_branch_name)
             colored_node_name = Fore.LIGHTBLACK_EX + self.get_formatted_name(merged_branch_name)
             commit_dot = Fore.LIGHTBLACK_EX + self.commit_style + Fore.RESET
             line = "%s└%s─┐ %s" % (' ' * left_spaces, commit_dot, colored_node_name)
             self.text_list.append(line)
             left_spaces += 3
 
+        parent_branch_names.append(node.pretty_name)
         line = self.build_basic_string_node_representation(node, left_spaces, excluded_parent_dots)
         self.text_list.append(line)
 
@@ -54,7 +57,7 @@ class ChainHierarchyPrinter:
             while self.should_skip_over_node(child):
                 child = child.children[0]
                 excluded_parent_count += 1
-            self.build_text_list_recursively(child, left_spaces + 3 + len(excluded_parent_dots), excluded_parent_count)
+            self.build_text_list_recursively(child, left_spaces + 3 + len(excluded_parent_dots), excluded_parent_count, parent_branch_names)
         self.add_vertical_whitespace_if_needed()
 
     def build_basic_string_node_representation(self, node, left_spaces, excluded_parent_dots):

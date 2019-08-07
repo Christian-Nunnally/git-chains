@@ -42,5 +42,11 @@ class CommitTree:
 
     def populate_merged_branches(self, node):
         merged_branches_output = subprocess.run(['git', 'branch', '--merged', node.commit.hex], stdout=subprocess.PIPE).stdout.decode('utf-8')
-        merged_branchs = merged_branches_output.split()[1:]
-        node.merged_branch_names = merged_branchs
+        merged_branches = merged_branches_output.split()
+        result = []
+        for merged_branch in merged_branches:
+            if merged_branch != "*":
+                print(merged_branch)
+                result.append(merged_branch)
+
+        node.merged_branch_names = result
