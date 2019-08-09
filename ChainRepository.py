@@ -52,7 +52,7 @@ class ChainRepository():
             is_ancestor = subprocess.call(['git', 'merge-base', '--is-ancestor', self.octopus_merge_base, commit.hex])
             if (is_ancestor):
                 branch_log_to_octopus_merge_base.append(commit)
-        branch_log_to_octopus_merge_base.reverse()
+        branch_log_to_octopus_merge_base.reverse() 
         return branch_log_to_octopus_merge_base
 
     def walk_first_parent(self, branch):
