@@ -18,7 +18,6 @@ class CommitTree:
 
         self.nodes[new_node.commit.id] = new_node
         self.link_child_with_parent(parent_id, new_node)
-        print(commit.hex, self.root_id)
         if commit.hex == self.root_id:
             self.root = new_node
 

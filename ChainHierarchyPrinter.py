@@ -38,7 +38,8 @@ class ChainHierarchyPrinter:
         excluded_parent_dots = self.get_excluded_parent_dots(excluded_parent_count)
         
         for merged_branch_name in node.merged_branch_names:
-            if (merged_branch_name == node.pretty_name or merged_branch_name in parent_branch_names):
+            split_names = [s.strip() for s in node.pretty_name.split(',')]
+            if (merged_branch_name in split_names or merged_branch_name in parent_branch_names):
                 continue
             parent_branch_names.append(merged_branch_name)
             colored_node_name = Fore.LIGHTBLACK_EX + self.get_formatted_name(merged_branch_name)
