@@ -52,8 +52,6 @@ class ChainRepository():
             is_ancestor = subprocess.call(['git', 'merge-base', '--is-ancestor', commit.hex, self.octopus_merge_base])
             if (is_ancestor):
                 branch_log_to_octopus_merge_base.append(commit)
-            else: 
-                print("nope")
         branch_log_to_octopus_merge_base.reverse()
         return branch_log_to_octopus_merge_base
 
