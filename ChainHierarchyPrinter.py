@@ -19,7 +19,6 @@ class ChainHierarchyPrinter:
         self.parent_style = ChainHierarchyPrinter.HiddenParentIndicator
 
         self.tree = chain_repo.tree
-        self.master_log = chain_repo.master_log
         self.repo = chain_repo.repo
         self.text_list = []
 
@@ -117,9 +116,6 @@ class ChainHierarchyPrinter:
                 sorted_children.append(child)
         sorted_children.reverse()
         return sorted_children
-
-    def get_master_branch_commit(self):
-        return self.master_log[len(self.master_log - 1)]
 
     def decorate_text_list(self):
         self.add_header_to_text_list()

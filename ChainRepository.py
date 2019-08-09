@@ -34,7 +34,7 @@ class ChainRepository():
         args = ['git', 'merge-base', '--octopus']
         for local_branch_name in self.repo.branches.local:
             args.append(local_branch_name)
-        self.octopus_merge_base = subprocess.run(args, stdout=subprocess.PIPE).stdout.decode('utf-8')
+        self.octopus_merge_base = subprocess.run(args, stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
 
     def generate_local_branch_logs_to_merge_base(self):
         for local_branch in self.local_branches:
@@ -46,13 +46,12 @@ class ChainRepository():
         branch_log_to_octopus_merge_base = []
 
         for commit in self.walk_from_branch(branch.target):
-            print(self.octopus_merge_base)
+            if commit.hex == self.octopus_merge_base:
+                branch_log_to_octopus_merge_base.append(commit)
+                break
             is_ancestor = subprocess.call(['git', 'merge-base', '--is-ancestor', self.octopus_merge_base, commit.hex])
             if (is_ancestor):
-                print(commit.hex + " : " + self.octopus_merge_base)
-            branch_log_to_octopus_merge_base.append(commit)
-            if commit.hex == self.octopus_merge_base:
-                break
+                branch_log_to_octopus_merge_base.append(commit)
         branch_log_to_octopus_merge_base.reverse()
         return branch_log_to_octopus_merge_base
 
@@ -98,7 +97,7 @@ class ChainRepository():
     #                     parent_id = node.commit.id
 
     def build_commit_tree(self):
-        self.tree = CommitTree()
+        self.tree = CommitTree(self.octopus_merge_base)
         for log in self.local_branch_logs_to_merge_base:
             parent_id = None
             for commit in log:

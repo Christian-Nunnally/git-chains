@@ -6,6 +6,9 @@ class CommitTree:
     root = None
     nodes = {}
 
+    def __init__(self, root_id):
+        self.root_id = root_id
+
     def insert(self, parent_id, commit, pretty_name, has_name, is_part_of_master):
         new_node = CommitNode(commit, pretty_name, has_name)
         new_node.is_part_of_master = is_part_of_master
@@ -15,7 +18,8 @@ class CommitTree:
 
         self.nodes[new_node.commit.id] = new_node
         self.link_child_with_parent(parent_id, new_node)
-        if self.root == None:
+        print(commit.hex, self.root_id)
+        if commit.hex == self.root_id:
             self.root = new_node
 
         self.populate_merged_branches(new_node)
