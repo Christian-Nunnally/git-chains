@@ -32,7 +32,7 @@ def __main__():
         Legend.print_legend()
         return
 
-    chain_repo = ChainRepository(local_repo_name, master_branch_name)
+    chain_repo = ChainRepository(local_repo_name, master_branch_name, args.specified_branches)
     printer = ChainHierarchyPrinter(chain_repo)
     printer.print()
 
