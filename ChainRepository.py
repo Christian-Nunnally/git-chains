@@ -8,15 +8,12 @@ class ChainRepository():
     def __init__(self, repo_path, master_branch_name, local_branches_to_include = []):
         self.tree = None
         self.repo = Repository(repo_path)
-        # self.master_branch_name = master_branch_name
         self.local_branch_logs_to_merge_base = []
         self.local_branches = []
-        # self.master_log = []
         self.local_feature_branches = []
-        # self.master_branch = None
         self.commit_name_map = {}
-        # self.local_branch_merge_bases_with_master = []
         self.local_branches_to_include = local_branches_to_include
+        self.included_local_branch_names = []
 
         # the order that these initialization methods are called matters.
         self.initialize_branches()
@@ -27,13 +24,11 @@ class ChainRepository():
     def initialize_branches(self):
         for local_branch_name in self.repo.branches.local:
             if len(self.local_branches_to_include) == 0 or local_branch_name in self.local_branches_to_include:
+                self.included_local_branch_names.append(local_branch_name)
                 self.local_branches.append(self.repo.branches[local_branch_name])
-        # self.master_branch = self.repo.branches[self.master_branch_name]
 
     def calculate_octopus_merge_base(self):
-        args = ['git', 'merge-base', '--octopus']
-        for local_branch_name in self.repo.branches.local:
-            args.append(local_branch_name)
+        args = ['git', 'merge-base', '--octopus'] + self.included_local_branch_names
         self.octopus_merge_base = subprocess.run(args, stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
 
     def generate_local_branch_logs_to_merge_base(self):
@@ -55,14 +50,8 @@ class ChainRepository():
         branch_log_to_octopus_merge_base.reverse()
         return branch_log_to_octopus_merge_base
 
-    def walk_first_parent(self, branch):
-        walker = self.repo.walk(branch, GIT_SORT_TOPOLOGICAL)
-        walker.simplify_first_parent()
-        return walker
-
     def walk_from_branch(self, branch):
-        walker = self.repo.walk(branch, GIT_SORT_TOPOLOGICAL) 
-        return walker
+        return self.repo.walk(branch, GIT_SORT_TOPOLOGICAL) 
 
     def get_commit_names(self, commit):
         if (len(self.commit_name_map) == 0): 
@@ -79,22 +68,6 @@ class ChainRepository():
 
     def does_commit_have_name(self, commit):
         return commit.hex in self.commit_name_map
-
-    # def build_commit_tree(self):
-    #     self.tree = CommitTree()
-    #     master_parent_id = None
-    #     parent_id = None
-    #     for master_commit in self.master_log:
-    #         node = self.insert_commit_into_tree(master_commit, master_parent_id, True)
-    #         master_parent_id = node.commit.id
-
-    #         if master_commit.hex in [x.hex for x in self.local_branch_merge_bases_with_master]:
-    #             local_branch_logs_from_commit = self.get_local_branch_logs_starting_at_commit(master_commit)
-    #             for local_branch_log in local_branch_logs_from_commit:
-    #                 parent_id = master_parent_id
-    #                 for commit in local_branch_log[1:]:
-    #                     node = self.insert_commit_into_tree(commit, parent_id, False)
-    #                     parent_id = node.commit.id
 
     def build_commit_tree(self):
         self.tree = CommitTree(self.octopus_merge_base)
