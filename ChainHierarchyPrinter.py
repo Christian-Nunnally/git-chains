@@ -38,8 +38,7 @@ class ChainHierarchyPrinter:
         excluded_parent_dots = self.get_excluded_parent_dots(excluded_parent_count)
         
         for merged_branch_name in node.merged_branch_names:
-            split_names = [s.strip() for s in node.pretty_name.split(',')]
-            if (merged_branch_name in split_names or merged_branch_name in parent_branch_names):
+            if (merged_branch_name in node.pretty_names or merged_branch_name in parent_branch_names):
                 continue
             parent_branch_names.append(merged_branch_name)
             colored_node_name = Fore.LIGHTBLACK_EX + self.get_formatted_name(merged_branch_name)
@@ -48,7 +47,8 @@ class ChainHierarchyPrinter:
             self.text_list.append(line)
             left_spaces += 3
 
-        parent_branch_names.append(node.pretty_name)
+        for node_name in node.pretty_names:
+            parent_branch_names.append(node_name)
         line = self.build_basic_string_node_representation(node, left_spaces, excluded_parent_dots)
         self.text_list.append(line)
 
@@ -86,7 +86,7 @@ class ChainHierarchyPrinter:
             return self.parent_style * 1 + "·"+ str(excluded_parent_count - 2) +"·" + self.parent_style * 1
 
     def should_skip_over_node(self, node):
-        if ("master" in node.pretty_name): 
+        if ("master" in node.pretty_names): 
             return False
         if self.show_nodes_with_names and node.has_name:
             return False
@@ -95,7 +95,11 @@ class ChainHierarchyPrinter:
         return False 
 
     def get_formatted_node_name(self, node):
-        return self.get_formatted_name(node.pretty_name)
+        result = ""
+        for node_name in node.pretty_names:
+            formatted_name = self.get_formatted_name(node_name)
+            result += formatted_name + ", "
+        return result[:-2]
 
     def get_formatted_name(self, name):
         if (not self.show_full_branch_names):

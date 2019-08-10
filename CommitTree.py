@@ -9,8 +9,8 @@ class CommitTree:
     def __init__(self, root_id):
         self.root_id = root_id
 
-    def insert(self, parent_id, commit, pretty_name, has_name, is_part_of_master):
-        new_node = CommitNode(commit, pretty_name, has_name)
+    def insert(self, parent_id, commit, pretty_names, has_branch_name, is_part_of_master):
+        new_node = CommitNode(commit, pretty_names, has_branch_name)
         new_node.is_part_of_master = is_part_of_master
 
         if new_node.commit.id in self.nodes:
@@ -29,19 +29,6 @@ class CommitTree:
             parent_node = self.nodes[parent_id]
             parent_node.add(child)
             child.parent = parent_node 
-    
-    def get_nodes_with_sub_string_in_name(self, sub_string):
-        return self.get_nodes_with_sub_string_in_name_recursive(self.root, sub_string)
-
-    def get_nodes_with_sub_string_in_name_recursive(self, node, sub_string):
-        found_nodes = []
-        if node.pretty_name == sub_string:
-            found_nodes.append(node)
-        if sub_string in node.pretty_name:
-            found_nodes.append(node)
-        for child in node.children:
-            found_nodes += self.get_nodes_with_sub_string_in_name_recursive(child, sub_string)
-        return found_nodes
 
     def populate_merged_branches(self, node):
         merged_branches_output = subprocess.run(['git', 'branch', '--merged', node.commit.hex], stdout=subprocess.PIPE).stdout.decode('utf-8')

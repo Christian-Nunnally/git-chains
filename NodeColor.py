@@ -28,7 +28,7 @@ class NodeColor:
 
         if node.has_name:
             self.name_color = NodeColor.NamedNodeColor
-            if (highlight_string in node.pretty_name):
+            if (highlight_string in node.pretty_names):
                 self.name_color = NodeColor.HighlightedNodeColor
         else:
             self.name_color = NodeColor.DefaultNodeColor

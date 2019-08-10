@@ -1,10 +1,10 @@
 from pygit2 import *
 
 class CommitNode:
-    def __init__(self, commit, pretty_name, has_name):
+    def __init__(self, commit, pretty_names, has_name):
         self.commit = commit
         self.name = commit.id
-        self.pretty_name = pretty_name
+        self.pretty_names = pretty_names
         self.parent = None
         self.children = []
         self.has_name = has_name

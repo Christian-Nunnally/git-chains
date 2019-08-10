@@ -1,4 +1,4 @@
-from pygit2 import *
+from pygit2 import Repository, GIT_SORT_TOPOLOGICAL
 from ChainHierarchyPrinter import ChainHierarchyPrinter
 from CommitNode import CommitNode
 from CommitTree import CommitTree
@@ -78,15 +78,6 @@ class ChainRepository():
                 parent_id = node.commit.id
 
     def insert_commit_into_tree(self, commit, parent_id, is_part_of_master):
-        commit_name = self.get_combined_branch_name_from_commit(commit)
+        commit_names = self.get_commit_names(commit)
         commit_has_name = self.does_commit_have_name(commit)
-        return self.tree.insert(parent_id, commit, commit_name, commit_has_name, True)
-
-    def get_combined_branch_name_from_commit(self, commit):
-        names = self.get_commit_names(commit)
-        combined_names = ""
-        for name in names:
-            if not name == names[0]:
-                combined_names = combined_names + ", "
-            combined_names = combined_names + name
-        return combined_names
+        return self.tree.insert(parent_id, commit, commit_names, commit_has_name, True)
