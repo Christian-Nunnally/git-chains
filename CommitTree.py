@@ -1,4 +1,3 @@
-from pygit2 import *
 from CommitNode import CommitNode
 import subprocess
 
@@ -31,7 +30,8 @@ class CommitTree:
             child.parent = parent_node 
 
     def populate_merged_branches(self, node):
-        merged_branches_output = subprocess.run(['git', 'branch', '--merged', node.commit.hex], stdout=subprocess.PIPE).stdout.decode('utf-8')
+        args = ['git', 'branch', '--merged', node.commit.hex]
+        merged_branches_output = subprocess.run(args, stdout=subprocess.PIPE).stdout.decode('utf-8')
         merged_branches = merged_branches_output.split()
         result = []
         for merged_branch in merged_branches:

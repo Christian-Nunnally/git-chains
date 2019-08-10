@@ -1,5 +1,3 @@
-from pygit2 import *
-
 class CommitNode:
     def __init__(self, commit, pretty_names, has_name):
         self.commit = commit

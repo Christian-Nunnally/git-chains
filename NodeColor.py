@@ -1,4 +1,4 @@
-from colorama import *
+from colorama import Fore, init, Style
 from CommitNode import CommitNode
 
 # Colors are ☣

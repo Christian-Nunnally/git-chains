@@ -1,6 +1,5 @@
-from CommitTree import CommitTree
+from colorama import Fore
 from NodeColor import NodeColor
-from colorama import *
 import os
 
 class ChainHierarchyPrinter:

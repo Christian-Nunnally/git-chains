@@ -1,13 +1,11 @@
-from pygit2 import Repository, GIT_SORT_TOPOLOGICAL
-from ChainHierarchyPrinter import ChainHierarchyPrinter
-from CommitNode import CommitNode
-from CommitTree import CommitTree
+import pygit2
 import subprocess
+from CommitTree import CommitTree
 
 class ChainRepository():
     def __init__(self, repo_path, master_branch_name, local_branches_to_include = []):
         self.tree = None
-        self.repo = Repository(repo_path)
+        self.repo = pygit2.Repository(repo_path)
         self.local_branch_logs_to_merge_base = []
         self.local_branches = []
         self.local_feature_branches = []
@@ -37,34 +35,45 @@ class ChainRepository():
             self.local_branch_logs_to_merge_base.append(branch_log_to_octopus_merge_base)
 
     def generate_branch_log_to_octopus_merge_base(self, branch):
-        commit = self.repo.get(branch.target)
         branch_log_to_octopus_merge_base = []
 
         for commit in self.walk_from_branch(branch.target):
-            if commit.hex == self.octopus_merge_base:
+            if self.is_ancestor(commit.hex, self.octopus_merge_base):
                 branch_log_to_octopus_merge_base.append(commit)
-                break
-            is_ancestor = subprocess.call(['git', 'merge-base', '--is-ancestor', commit.hex, self.octopus_merge_base])
-            if (is_ancestor):
-                branch_log_to_octopus_merge_base.append(commit)
+                if commit.hex == self.octopus_merge_base:
+                    break
         branch_log_to_octopus_merge_base.reverse()
         return branch_log_to_octopus_merge_base
 
     def walk_from_branch(self, branch):
-        return self.repo.walk(branch, GIT_SORT_TOPOLOGICAL) 
+        return self.repo.walk(branch, pygit2.GIT_SORT_TOPOLOGICAL) 
+
+    def is_ancestor(self, commit, possible_ancestor):
+        args = ['git', 'merge-base', '--is-ancestor', possible_ancestor, commit]
+        return_value = subprocess.call(args)
+        return not return_value
 
     def get_commit_names(self, commit):
-        if (len(self.commit_name_map) == 0): 
-            for branch in self.local_branches:
-                branch_name = branch.name
-                if (branch_name.startswith("refs/heads/")):
-                    branch_name = branch_name[len("refs/heads/"):]
-                if (not branch.target.hex in self.commit_name_map):
-                    self.commit_name_map[branch.target.hex] = []
-                self.commit_name_map[branch.target.hex].append(branch_name)
-        if (commit.hex in self.commit_name_map):
+        self.populate_commit_name_map_if_empty()
+        if commit.hex in self.commit_name_map:
             return self.commit_name_map[commit.hex]
         return ['{:7.7}'.format(commit.hex)]
+
+    def populate_commit_name_map_if_empty(self):
+        if len(self.commit_name_map) == 0:
+            self.populate_commit_name_map()
+
+    def populate_commit_name_map(self):
+        for branch in self.local_branches:
+            branch_name = branch.name
+            if (branch_name.startswith("refs/heads/")):
+                branch_name = branch_name[len("refs/heads/"):]
+            self.append_to_commit_name_map(branch.target.hex, branch_name)
+
+    def append_to_commit_name_map(self, commit_id, name):
+        if (not commit_id in self.commit_name_map):
+            self.commit_name_map[commit_id] = []
+        self.commit_name_map[commit_id].append(name)  
 
     def does_commit_have_name(self, commit):
         return commit.hex in self.commit_name_map
