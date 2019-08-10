@@ -104,16 +104,8 @@ class ChainRepository():
                 node = self.insert_commit_into_tree(commit, parent_id, False)
                 parent_id = node.commit.id
 
-    # def get_local_branch_logs_starting_at_commit(self, start_commit):
-    #     local_branch_logs_from_commit = []
-    #     for local_branch_log in self.local_branch_logs_to_merge_base:
-    #         if local_branch_log[0].hex == start_commit.hex:
-    #             local_branch_logs_from_commit.append(local_branch_log)
-    #     return local_branch_logs_from_commit
-
     def insert_commit_into_tree(self, commit, parent_id, is_part_of_master):
         commit_name = self.get_combined_branch_name_from_commit(commit)
-        print(commit_name, commit.hex)
         commit_has_name = self.does_commit_have_name(commit)
         return self.tree.insert(parent_id, commit, commit_name, commit_has_name, True)
 
