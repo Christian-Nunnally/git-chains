@@ -49,4 +49,4 @@ class CommitTree:
         for node_without_a_parent in nodes_without_a_parent:
             if (nodes_without_a_parent[0].commit.hex != node_without_a_parent.commit.hex):
                 print("Error: Unable to find a single root to the commit tree.")
-        self.root = nodes_without_a_parent[0]
+        self.root = nodes_without_a_parent[-1]

@@ -11,12 +11,9 @@ class GitRepositoryCopier:
         script_file_path = temp_dir + "\\repo-init.ps1"
         script_file = open(script_file_path, "x")
 
-        post_commands = ["git checkout master-real", "git branch -D [master]"]
-        commands = extra_commands + post_commands
-
         scriptWriter = CommitTreeToScriptConverter()
         scriptWriter.skip_single_child_nodes = skip_single_child_nodes
-        scriptWriter.convert_commit_tree_to_script(self.tree, script_file, commands)
+        scriptWriter.convert_commit_tree_to_script(self.tree, script_file, extra_commands)
 
         script_file.close()
         executer = PowerShellScriptExecuter()
