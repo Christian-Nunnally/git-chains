@@ -4,7 +4,7 @@ import subprocess
 class PowerShellScriptExecuter:
 
     def __init__(self):
-        self.supress_output = False
+        self.supress_output = True
 
     def execute(self, script_path):
         p = None

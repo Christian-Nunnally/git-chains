@@ -14,6 +14,8 @@ import random
 def convert_master_to_real_master_string(string):
     if string == "master":
         return "master-real"
+    if string == "[master]":
+        return "master"
     return string
 
 class CommitTreeToScriptConverter:
@@ -41,14 +43,14 @@ class CommitTreeToScriptConverter:
 
         self.print_to_file("New-Item %s.txt" % str(uuid.uuid4()).replace("-", ""), script_file)
         self.print_to_file("Invoke-Expression \"git add .\"", script_file)
-        self.print_to_file("Invoke-Expression \"git commit -q -a -m 'commit for " + current_commit.pretty_name + "'\"", script_file)
+        self.print_to_file("Invoke-Expression \"git commit -q -a -m 'commit for " + current_commit.pretty_names[0] + "'\"", script_file)
         self.print_to_file(commit + " = Invoke-Expression \"git log --format='%H' -n 1\"", script_file)
         
         if current_commit.has_name:
-            for branch_name in current_commit.pretty_name.split(' '):
-                if branch_name == "master":
-                    branch_name = "master-real"
-                self.print_to_file("Invoke-Expression \"git branch %s\"" % branch_name.replace(',', ''), script_file)
+            branch_name = current_commit.pretty_names[0]
+            if "master" in current_commit.pretty_names:
+                branch_name = "master-real"
+            self.print_to_file("Invoke-Expression \"git branch %s\"" % branch_name.replace(',', ''), script_file)
 
         for child in current_commit.children:
             self.recursivly_generate_git_commands(child, script_file)

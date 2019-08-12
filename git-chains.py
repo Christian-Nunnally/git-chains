@@ -10,8 +10,7 @@ def __main__():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('branches_to_include', type=str, nargs='*', help='The branches you want to include in the map')
-    parser.add_argument("-d", "--repo", help="Set the location for the local repo", type=str)
-    parser.add_argument("-b", "--branch", help="Set the master branch name", type=str)
+    parser.add_argument("-r", "--repo", help="Set the location for the local repo", type=str)
     args = parser.parse_args()
         
     local_repo_name = r"C:\ASW\.git"
@@ -20,11 +19,7 @@ def __main__():
     elif os.path.exists("./.git"):
         local_repo_name = os.getcwd() + "\\.git"
 
-    master_branch_name = "master"
-    if args.branch:
-        master_branch_name = args.branch
-
-    chain_repo = ChainRepository(local_repo_name, master_branch_name, args.branches_to_include)
+    chain_repo = ChainRepository(local_repo_name, args.branches_to_include)
     printer = ChainHierarchyPrinter(chain_repo)
     printer.print()
 

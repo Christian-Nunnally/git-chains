@@ -1,6 +1,6 @@
 from colorama import Fore
 from NodeColor import NodeColor
-import s
+import os
 
 class ChainHierarchyPrinter:
     CommitIndicator = '●'

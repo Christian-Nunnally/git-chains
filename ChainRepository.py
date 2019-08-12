@@ -3,9 +3,10 @@ import subprocess
 from CommitTree import CommitTree
 
 class ChainRepository():
-    def __init__(self, repo_path, master_branch_name, local_branches_to_include = []):
+    def __init__(self, repo_path, local_branches_to_include = []):
         self.tree = None
         self.repo = pygit2.Repository(repo_path)
+        self.repo_directory = repo_path[:-4]
         self.local_branch_logs_to_merge_base = []
         self.local_branches = []
         self.local_feature_branches = []
@@ -27,7 +28,7 @@ class ChainRepository():
 
     def calculate_octopus_merge_base(self):
         args = ['git', 'merge-base', '--octopus'] + self.included_local_branch_names
-        self.octopus_merge_base = subprocess.run(args, stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
+        self.octopus_merge_base = subprocess.run(args, stdout=subprocess.PIPE, cwd=self.repo_directory).stdout.decode('utf-8').strip()
 
     def generate_local_branch_logs_to_merge_base(self):
         for local_branch in self.local_branches:
@@ -50,7 +51,7 @@ class ChainRepository():
 
     def is_ancestor(self, commit, possible_ancestor):
         args = ['git', 'merge-base', '--is-ancestor', possible_ancestor, commit]
-        return_value = subprocess.call(args)
+        return_value = subprocess.call(args, cwd=self.repo_directory)
         return not return_value
 
     def get_commit_names(self, commit):
@@ -79,12 +80,13 @@ class ChainRepository():
         return commit.hex in self.commit_name_map
 
     def build_commit_tree(self):
-        self.tree = CommitTree(self.octopus_merge_base)
+        self.tree = CommitTree(self.octopus_merge_base, self.repo_directory)
         for log in self.local_branch_logs_to_merge_base:
             parent_id = None
             for commit in log:
                 node = self.insert_commit_into_tree(commit, parent_id, False)
                 parent_id = node.commit.id
+        self.tree.find_root()
 
     def insert_commit_into_tree(self, commit, parent_id, is_part_of_master):
         commit_names = self.get_commit_names(commit)

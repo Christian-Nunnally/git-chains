@@ -49,10 +49,7 @@ CALL :ShowChainsAndMessage "git commit -m 'Address review feedback for amazing-f
 CALL :MakeCommit
 
 REM MERGE VERSION
-CALL :ShowChainsAndMessage "git chains --merge --show amazing-feature refactor-for-feature"
-cls
-python ..\git-chains.py %* -m -s amazing-feature refactor-for-feature
-timeout /t 4 >nul
+
 CALL :ShowChainsAndMessage "git checkout refactor-for-feature"
 CALL :ShowChainsAndMessage "git merge amazing-feature"
 git checkout refactor-for-feature
@@ -67,10 +64,6 @@ CALL :ShowChainsAndMessage "Fin"
 timeout /t 4 >nul
 
 REM REBASE VERSION
-REM CALL :ShowChainsAndMessage "git chains --rebase --show amazing-feature refactor-for-feature"
-REM cls
-REM python ..\git-chains.py %* -r -s amazing-feature refactor-for-feature
-REM timeout /t 4 >nul
 REM CALL :ShowChainsAndMessage "git rebase amazing-feature refactor-for-feature"
 REM git rebase amazing-feature refactor-for-feature
 REM CALL :ShowChainsAndMessage "The rebase fixed our chain. Now our refactor PR can be targeted to our feature PR."
