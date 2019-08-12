@@ -33,7 +33,8 @@ def __main__():
     
     command = "git " + ' '.join(unknown_args)
     print("\nAfter `%s`:" % command)
-    commands = [command, "git branch"]
+    current_branch = chain_repo.repo.head.name.split('/')[-1]
+    commands = ["git checkout " + current_branch, command, "git branch"]
 
     previewer = GitCommandPreviewer(chain_repo, local_branches_to_include)
     previewer.preview_commands(commands, not args.full)
