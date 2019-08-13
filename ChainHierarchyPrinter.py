@@ -6,7 +6,7 @@ class ChainHierarchyPrinter:
     CommitIndicator = '●'
     HiddenParentIndicator = '◌'
 
-    def __init__(self, chain_repo):
+    def __init__(self, chain_repository):
         self.vertical_white_space_between_chains_off_master = True
         self.show_nodes_with_one_child = False
         self.show_reference_nodes = True
@@ -17,8 +17,8 @@ class ChainHierarchyPrinter:
         self.commit_style = ChainHierarchyPrinter.CommitIndicator
         self.parent_style = ChainHierarchyPrinter.HiddenParentIndicator
 
-        self.tree = chain_repo.tree
-        self.repo = chain_repo.repo
+        self.tree = chain_repository.tree
+        self.repository = chain_repository.repository
         self.text_list = []
 
     def print(self):
@@ -33,7 +33,6 @@ class ChainHierarchyPrinter:
 
     def build_text_list_recursively(self, node, left_spaces, excluded_parent_count, parent_branch_names):
         parent_branch_names = list(parent_branch_names)
-        sorted_children = self.sorted_children(node.children)
         excluded_parent_dots = self.get_excluded_parent_dots(excluded_parent_count)
         
         for merged_branch_name in node.merged_branch_names:
@@ -51,7 +50,7 @@ class ChainHierarchyPrinter:
         line = self.build_basic_string_node_representation(node, left_spaces, excluded_parent_dots)
         self.text_list.append(line)
 
-        for child in sorted_children:
+        for child in node.children:
             excluded_parent_count = 0
             while self.should_skip_over_node(child):
                 child = child.children[0]
@@ -60,7 +59,7 @@ class ChainHierarchyPrinter:
         self.add_vertical_whitespace_if_needed()
 
     def build_basic_string_node_representation(self, node, left_spaces, excluded_parent_dots):
-        current_branch_name = self.repo.head.name.split('/')[-1]
+        current_branch_name = self.repository.head.name.split('/')[-1]
         color = NodeColor(node, current_branch_name)
         colored_node_name = color.name_color + self.get_formatted_node_name(node)
         commit_dot = color.status_color + self.commit_style + color.reset
@@ -109,17 +108,6 @@ class ChainHierarchyPrinter:
         if (self.vertical_white_space_between_chains_off_master):
             if (len(self.text_list) > 0 and not len(self.text_list[-1]) == 0):
                 self.text_list.append('')
-
-    def sorted_children(self, children):
-        sorted_children = []
-        for child in children:
-            if (child.is_part_of_master):
-                sorted_children.append(child)
-        for child in children:
-            if (not child.is_part_of_master):
-                sorted_children.append(child)
-        sorted_children.reverse()
-        return sorted_children
 
     def decorate_text_list(self):
         self.add_header_to_text_list()

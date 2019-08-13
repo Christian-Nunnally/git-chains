@@ -1,34 +1,44 @@
 import pygit2
 import subprocess
 from CommitTree import CommitTree
+from Logger import Logger
 
 class ChainRepository():
-    def __init__(self, repo_path, local_branches_to_include = []):
+    def __init__(self, repository_path, local_branches_to_include):
+        self.logger = Logger(self)
+        self.logger.log("Loading repository")
+
         self.tree = None
-        self.repo = pygit2.Repository(repo_path)
-        self.repo_directory = repo_path[:-4]
+        self.repository_directory = repository_path[:-4]
         self.local_branch_logs_to_merge_base = []
         self.local_branches = []
         self.local_feature_branches = []
         self.commit_name_map = {}
         self.local_branches_to_include = local_branches_to_include
         self.included_local_branch_names = []
+        self.initialize()
 
-        # the order that these initialization methods are called matters.
+    def initialize(self):
+        self.logger.log("Loading repository")
+        self.repository = pygit2.Repository(self.repository_directory + "/.git")
+        self.logger.log("Initializing branches")
         self.initialize_branches()
+        self.logger.log("Calculating octopus merge base")
         self.calculate_octopus_merge_base()
+        self.logger.log("Walking local branch logs to octopus merge base")
         self.generate_local_branch_logs_to_merge_base()
+        self.logger.log("Building tree from local branch logs")
         self.build_commit_tree()
 
     def initialize_branches(self):
-        for local_branch_name in self.repo.branches.local:
+        for local_branch_name in self.repository.branches.local:
             if len(self.local_branches_to_include) == 0 or local_branch_name in self.local_branches_to_include:
                 self.included_local_branch_names.append(local_branch_name)
-                self.local_branches.append(self.repo.branches[local_branch_name])
+                self.local_branches.append(self.repository.branches[local_branch_name])
 
     def calculate_octopus_merge_base(self):
         args = ['git', 'merge-base', '--octopus'] + self.included_local_branch_names
-        self.octopus_merge_base = subprocess.run(args, stdout=subprocess.PIPE, cwd=self.repo_directory).stdout.decode('utf-8').strip()
+        self.octopus_merge_base = subprocess.run(args, stdout=subprocess.PIPE, cwd=self.repository_directory).stdout.decode('utf-8').strip()
 
     def generate_local_branch_logs_to_merge_base(self):
         for local_branch in self.local_branches:
@@ -36,6 +46,7 @@ class ChainRepository():
             self.local_branch_logs_to_merge_base.append(branch_log_to_octopus_merge_base)
 
     def generate_branch_log_to_octopus_merge_base(self, branch):
+        self.logger.log("Walking the history of " + branch.name + " to octopus merge base")
         branch_log_to_octopus_merge_base = []
 
         for commit in self.walk_from_branch(branch.target):
@@ -47,11 +58,11 @@ class ChainRepository():
         return branch_log_to_octopus_merge_base
 
     def walk_from_branch(self, branch):
-        return self.repo.walk(branch, pygit2.GIT_SORT_TOPOLOGICAL) 
+        return self.repository.walk(branch, pygit2.GIT_SORT_TOPOLOGICAL) 
 
     def is_ancestor(self, commit, possible_ancestor):
         args = ['git', 'merge-base', '--is-ancestor', possible_ancestor, commit]
-        return_value = subprocess.call(args, cwd=self.repo_directory)
+        return_value = subprocess.call(args, cwd=self.repository_directory)
         return not return_value
 
     def get_commit_names(self, commit):
@@ -80,15 +91,15 @@ class ChainRepository():
         return commit.hex in self.commit_name_map
 
     def build_commit_tree(self):
-        self.tree = CommitTree(self.octopus_merge_base, self.repo_directory)
+        self.tree = CommitTree(self.octopus_merge_base, self.repository_directory)
         for log in self.local_branch_logs_to_merge_base:
             parent_id = None
             for commit in log:
-                node = self.insert_commit_into_tree(commit, parent_id, False)
+                node = self.insert_commit_into_tree(commit, parent_id)
                 parent_id = node.commit.id
         self.tree.find_root()
 
-    def insert_commit_into_tree(self, commit, parent_id, is_part_of_master):
+    def insert_commit_into_tree(self, commit, parent_id):
         commit_names = self.get_commit_names(commit)
         commit_has_name = self.does_commit_have_name(commit)
-        return self.tree.insert(parent_id, commit, commit_names, commit_has_name, True)
+        return self.tree.insert(parent_id, commit, commit_names, commit_has_name)

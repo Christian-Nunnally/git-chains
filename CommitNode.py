@@ -6,8 +6,6 @@ class CommitNode:
         self.parent = None
         self.children = []
         self.has_name = has_name
-        self.is_stale = False
-        self.is_part_of_master = False
         self.merged_branch_names = []
 
     def add(self, child):

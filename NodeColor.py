@@ -12,8 +12,6 @@ class NodeColor:
     NamedNodeColor = Fore.LIGHTBLUE_EX
     HighlightedNodeColor = Fore.LIGHTGREEN_EX
     DefaultNodeColor = Fore.WHITE
-
-    StaleStatusColor = Fore.YELLOW + Style.NORMAL
     UpToDateStatusColor = Fore.GREEN + Style.BRIGHT
 
     node = None
@@ -34,15 +32,6 @@ class NodeColor:
             self.name_color = NodeColor.DefaultNodeColor
 
         if node.parent != None:
-            if node.parent.is_stale:
-                self.status_color = NodeColor.StaleStatusColor
-                self.omitted_parent = NodeColor.StaleStatusColor
-            elif node.parent.is_part_of_master:
-                self.omitted_parent = NodeColor.DefaultNodeColor + Style.BRIGHT
+            self.omitted_parent = NodeColor.DefaultNodeColor + Style.BRIGHT
 
-        if node.is_stale:
-            self.status_color = NodeColor.StaleStatusColor
-        elif node.is_part_of_master:
-            self.status_color = NodeColor.DefaultNodeColor
-        else:
-            self.status_color = NodeColor.UpToDateStatusColor
+        self.status_color = NodeColor.UpToDateStatusColor
