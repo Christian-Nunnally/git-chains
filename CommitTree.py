@@ -27,15 +27,16 @@ class CommitTree:
             child.parent = parent_node 
 
     def populate_merged_branches(self, node):
-        args = ['git', 'branch', '--merged', node.commit.hex]
-        merged_branches_output = subprocess.run(args, stdout=subprocess.PIPE, cwd=self.repository_directory).stdout.decode('utf-8')
-        merged_branches = merged_branches_output.split()
-        result = []
-        for merged_branch in merged_branches:
-            if merged_branch != "*":
-                result.append(merged_branch)
+        if node.has_name:
+            args = ['git', 'branch', '--merged', node.commit.hex]
+            merged_branches_output = subprocess.run(args, stdout=subprocess.PIPE, cwd=self.repository_directory).stdout.decode('utf-8')
+            merged_branches = merged_branches_output.split()
+            result = []
+            for merged_branch in merged_branches:
+                if merged_branch != "*":
+                    result.append(merged_branch)
 
-        node.merged_branch_names = result
+            node.merged_branch_names = result
 
     def find_root(self):
         root_nodes = self.find_all_root_nodes()
