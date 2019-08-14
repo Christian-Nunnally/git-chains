@@ -6,7 +6,6 @@ from Logger import Logger
 class ChainRepository():
     def __init__(self, repository_path, local_branches_to_include):
         self.logger = Logger(self)
-        self.logger.log("Loading repository")
 
         self.tree = None
         self.repository_directory = repository_path[:-4]
@@ -41,18 +40,20 @@ class ChainRepository():
         self.octopus_merge_base = subprocess.run(args, stdout=subprocess.PIPE, cwd=self.repository_directory).stdout.decode('utf-8').strip()
 
     def generate_local_branch_logs_to_merge_base(self):
+        commits_to_stop_traversing_at = [self.octopus_merge_base]
         for local_branch in self.local_branches:
-            branch_log_to_octopus_merge_base = self.generate_branch_log_to_octopus_merge_base(local_branch)
+            branch_log_to_octopus_merge_base = self.generate_branch_log_to_commit(local_branch, commits_to_stop_traversing_at)
             self.local_branch_logs_to_merge_base.append(branch_log_to_octopus_merge_base)
+            commits_to_stop_traversing_at.append(local_branch.target.hex)
 
-    def generate_branch_log_to_octopus_merge_base(self, branch):
+    def generate_branch_log_to_commit(self, branch, commits_to_stop_traversing_at):
         self.logger.log("Walking the history of " + branch.name + " to octopus merge base")
         branch_log_to_octopus_merge_base = []
 
         for commit in self.walk_from_branch(branch.target):
             if self.is_ancestor(commit.hex, self.octopus_merge_base):
                 branch_log_to_octopus_merge_base.append(commit)
-                if commit.hex == self.octopus_merge_base:
+                if commit.hex == self.octopus_merge_base or commit.hex in commits_to_stop_traversing_at:
                     break
         branch_log_to_octopus_merge_base.reverse()
         return branch_log_to_octopus_merge_base
