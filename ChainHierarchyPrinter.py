@@ -111,16 +111,18 @@ class ChainHierarchyPrinter:
 
     def decorate_text_list(self):
         self.add_header_to_text_list()
-        self.extend_pipes_up()
+        self.extend_pipes_up_all_lines()
         self.fix_joints()
 
-    def extend_pipes_up(self):
+    def extend_pipes_up_all_lines(self):
         for line_number in range(len(self.text_list)):
-            line = self.text_list[line_number]
-            for char_number in range(len(line)):
-                char = line[char_number]
-                if (char == '└'):
-                    self.extend_pipes_up_recursive(char_number, line_number - 1)
+            self.extend_pipes_up_line(line_number)
+
+    def extend_pipes_up_line(self, line_number):
+        line = self.text_list[line_number]
+        for char_number in range(len(line)):
+            if (line[char_number] == '└'):
+                self.extend_pipes_up_recursive(char_number, line_number - 1)
 
     def extend_pipes_up_recursive(self, x, y):
         if y <= 0:
@@ -135,20 +137,30 @@ class ChainHierarchyPrinter:
 
     def fix_joints(self):
         for line_number in range(len(self.text_list) - 1):
-            line = self.text_list[line_number]
-            for char_number in range(len(line)):
-                char = line[char_number]
-                next_line = self.text_list[line_number + 1]
-                if (len(next_line) > char_number):
-                    next_char = next_line[char_number]
-                    if (next_char == '│' or next_char == '└'):
-                        if (char == '└'):
-                            self.replace_char_in_line(line_number, char_number, '├')
-                        elif (char == "─"):
-                            self.replace_char_in_line(line_number, char_number, '┐')
+            self.fix_pipe_characters_that_are_disconnected_from_below(line_number)
+    
+    def fix_pipe_characters_that_are_disconnected_from_below(self, line_number):
+        line = self.text_list[line_number]
+        next_line = self.text_list[line_number + 1]
+        for char_number in range(len(line)):
+            self.fix_pipe_character_if_disconnected_from_below(line, next_line, line_number, char_number)
+
+    def fix_pipe_character_if_disconnected_from_below(self, line, next_line, line_number, char_number):
+        if len(next_line) > char_number:
+            char = line[char_number]
+            next_char = next_line[char_number]
+            self.apply_replace_rules_for_fixing_pipe_across_vertically_arranged_characters(next_char, char, line_number, char_number)
+
+    def apply_replace_rules_for_fixing_pipe_across_vertically_arranged_characters(self, char_below, char, line_number, char_number):
+        if not char_below == '│' and not char_below == '└':
+            return
+        if char == '└':
+            self.replace_char_in_line(line_number, char_number, '├')
+        elif char == "─":
+            self.replace_char_in_line(line_number, char_number, '┐')
 
     def replace_char_in_line(self, line_index, char_index, char):
-        if (len(self.text_list[line_index]) < char_index):
+        if len(self.text_list[line_index]) < char_index:
             self.text_list[line_index] += " " * (char_index - len(self.text_list[line_index])) 
         replacement = self.text_list[line_index][:char_index] + char + self.text_list[line_index][char_index + 1:]
         self.text_list[line_index] = replacement
