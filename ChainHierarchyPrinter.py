@@ -29,7 +29,10 @@ class ChainHierarchyPrinter:
             print(line)
     
     def build_text_list(self):
-        self.build_text_list_recursively(self.tree.root, 0, False, [])
+        if self.tree.root:
+            self.build_text_list_recursively(self.tree.root, 0, False, [])
+        else:
+            self.text_list = ["No root node."]
 
     def build_text_list_recursively(self, node, left_spaces, excluded_parent_count, parent_branch_names):
         parent_branch_names = list(parent_branch_names)

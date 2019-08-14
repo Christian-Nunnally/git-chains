@@ -43,7 +43,8 @@ class CommitTree:
         for root_node in root_nodes:
             if not root_nodes[0].commit.hex == root_node.commit.hex and not root_nodes[0].pretty_names[0] == root_node.pretty_names[0]:
                 print("Error: Unable to find a single root to the commit tree.")
-        self.root = root_nodes[-1]
+        if len(root_nodes) > 0:
+            self.root = root_nodes[-1]
 
     def find_all_root_nodes(self):
         root_nodes = []
