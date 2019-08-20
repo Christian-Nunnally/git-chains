@@ -1,5 +1,5 @@
 class CommitNode:
-    def __init__(self, commit, pretty_names, has_name):
+    def __init__(self, commit, pretty_names, has_name, parent_id):
         self.commit = commit
         self.name = commit.id
         self.pretty_names = pretty_names
@@ -7,6 +7,7 @@ class CommitNode:
         self.children = []
         self.has_name = has_name
         self.merged_branch_names = []
+        self.parent_id = parent_id
 
     def add(self, child):
         if self.can_add(child):

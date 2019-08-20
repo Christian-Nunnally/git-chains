@@ -36,7 +36,7 @@ def __main__():
     current_branch = chain_repo.repository.head.name.split('/')[-1]
     commands = ["git checkout " + current_branch, command, "git branch"]
 
-    previewer = GitCommandPreviewer(chain_repo, local_branches_to_include)
-    previewer.preview_commands(commands, not args.full)
+    previewer = GitCommandPreviewer(chain_repo, not args.full, local_branches_to_include)
+    previewer.preview_commands(commands)
 
 __main__()

@@ -1,19 +1,21 @@
+import os
+import random
+import shutil
+import stat
 import subprocess
 import sys
 import tempfile
-import shutil
-import os
-import stat
 import uuid
-from CommitTree import CommitTree
-from CommitNode import CommitNode
-from ChainRepository import ChainRepository
+
 from ChainHierarchyPrinter import ChainHierarchyPrinter
-import random
+from ChainRepository import ChainRepository
+from CommitNode import CommitNode
+from CommitTree import CommitTree
+
 
 class CommitTreeToScriptConverter:
-    def __init__(self):
-        self.skip_single_child_nodes = False
+    def __init__(self, skip_single_child_nodes):
+        self.skip_single_child_nodes = skip_single_child_nodes
         self.print_debug = False
 
     def convert_commit_tree_to_script(self, commit_tree_to_copy, script_file, commands_to_add):

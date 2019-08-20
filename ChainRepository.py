@@ -1,20 +1,24 @@
-import pygit2
 import subprocess
+
+import pygit2
+
+from CommitNode import CommitNode
 from CommitTree import CommitTree
+from CommitTreeBuilder import CommitTreeBuilder
 from Logger import Logger
+
 
 class ChainRepository():
     def __init__(self, repository_path, local_branches_to_include):
-        self.logger = Logger(self)
-
-        self.tree = None
+        self.local_branches_to_include = local_branches_to_include
         self.repository_directory = repository_path[:-4]
         self.local_branch_logs_to_merge_base = []
-        self.local_branches = []
         self.local_feature_branches = []
-        self.commit_name_map = {}
-        self.local_branches_to_include = local_branches_to_include
-        self.included_local_branch_names = []
+        self.local_branch_names = []
+        self.local_branches = []
+        self.branch_name_map = {}
+        self.logger = Logger(self)
+        self.tree = None
         self.initialize()
 
     def initialize(self):
@@ -30,33 +34,48 @@ class ChainRepository():
         self.build_commit_tree()
 
     def initialize_branches(self):
-        for local_branch_name in self.repository.branches.local:
-            if len(self.local_branches_to_include) == 0 or local_branch_name in self.local_branches_to_include:
-                self.included_local_branch_names.append(local_branch_name)
-                self.local_branches.append(self.repository.branches[local_branch_name])
+        for branch_name in self.repository.branches.local:
+            if self.should_include_branch(branch_name):
+                self.include_branch(branch_name)
+        self.populate_branch_name_map()
+        self.validate_repository()
+
+    def validate_repository(self):
+        if len(self.local_branch_names) == 0:
+            self.logger.warning("No branches analyzed. Make sure you have at least one branch included in your filter.")    
+
+    def include_branch(self, branch_name):
+        self.local_branch_names.append(branch_name)
+        self.local_branches.append(self.repository.branches[branch_name])
+
+    def should_include_branch(self, branch_name):
+        if len(self.local_branches_to_include) == 0:
+            return True
+        return branch_name in self.local_branches_to_include
 
     def calculate_octopus_merge_base(self):
-        args = ['git', 'merge-base', '--octopus'] + self.included_local_branch_names
-        self.octopus_merge_base = subprocess.run(args, stdout=subprocess.PIPE, cwd=self.repository_directory).stdout.decode('utf-8').strip()
+        args = ['git', 'merge-base', '--octopus'] + self.local_branch_names
+        process = subprocess.run(args, stdout=subprocess.PIPE, cwd=self.repository_directory)
+        self.octopus_merge_base = process.stdout.decode('utf-8').strip()
 
     def generate_local_branch_logs_to_merge_base(self):
-        commits_to_stop_traversing_at = [self.octopus_merge_base]
-        for local_branch in self.local_branches:
-            branch_log_to_octopus_merge_base = self.generate_branch_log_to_commit(local_branch, commits_to_stop_traversing_at)
+        for branch in self.local_branches:
+            self.logger.log("Walking the history of " + branch.name + " to octopus merge base")
+            branch_log_to_octopus_merge_base = self.generate_branch_log_to_octopus_merge_base(branch)
             self.local_branch_logs_to_merge_base.append(branch_log_to_octopus_merge_base)
-            commits_to_stop_traversing_at.append(local_branch.target.hex)
 
-    def generate_branch_log_to_commit(self, branch, commits_to_stop_traversing_at):
-        self.logger.log("Walking the history of " + branch.name + " to octopus merge base")
+    def generate_branch_log_to_octopus_merge_base(self, branch):
         branch_log_to_octopus_merge_base = []
-
         for commit in self.walk_from_branch(branch.target):
             if self.is_ancestor(commit.hex, self.octopus_merge_base):
                 branch_log_to_octopus_merge_base.append(commit)
-                if commit.hex == self.octopus_merge_base or commit.hex in commits_to_stop_traversing_at:
+                if commit.hex == self.octopus_merge_base:
                     break
-        branch_log_to_octopus_merge_base.reverse()
-        return branch_log_to_octopus_merge_base
+        return self.reverse(branch_log_to_octopus_merge_base)
+
+    def reverse(self, collection):
+        collection.reverse()
+        return collection
 
     def walk_from_branch(self, branch):
         return self.repository.walk(branch, pygit2.GIT_SORT_TOPOLOGICAL) 
@@ -66,41 +85,21 @@ class ChainRepository():
         return_value = subprocess.call(args, cwd=self.repository_directory)
         return not return_value
 
-    def get_commit_names(self, commit):
-        self.populate_commit_name_map_if_empty()
-        if commit.hex in self.commit_name_map:
-            return self.commit_name_map[commit.hex]
-        return ['{:7.7}'.format(commit.hex)]
-
-    def populate_commit_name_map_if_empty(self):
-        if len(self.commit_name_map) == 0:
-            self.populate_commit_name_map()
-
-    def populate_commit_name_map(self):
+    def populate_branch_name_map(self):
         for branch in self.local_branches:
-            branch_name = branch.name
-            if (branch_name.startswith("refs/heads/")):
-                branch_name = branch_name[len("refs/heads/"):]
-            self.append_to_commit_name_map(branch.target.hex, branch_name)
+            branch_name = self.format_branch_name(branch.name)
+            self.append_to_branch_name_map(branch.target.hex, branch_name)
 
-    def append_to_commit_name_map(self, commit_id, name):
-        if (not commit_id in self.commit_name_map):
-            self.commit_name_map[commit_id] = []
-        self.commit_name_map[commit_id].append(name)  
+    def format_branch_name(self, branch_name):
+        if (branch_name.startswith("refs/heads/")):
+            return branch_name[len("refs/heads/"):]
+        return branch_name
 
-    def does_commit_have_name(self, commit):
-        return commit.hex in self.commit_name_map
+    def append_to_branch_name_map(self, commit_id, name):
+        if (not commit_id in self.branch_name_map):
+            self.branch_name_map[commit_id] = []
+        self.branch_name_map[commit_id].append(name)  
 
     def build_commit_tree(self):
-        self.tree = CommitTree(self.octopus_merge_base, self.repository_directory)
-        for log in self.local_branch_logs_to_merge_base:
-            parent_id = None
-            for commit in log:
-                node = self.insert_commit_into_tree(commit, parent_id)
-                parent_id = node.commit.id
-        self.tree.find_root()
-
-    def insert_commit_into_tree(self, commit, parent_id):
-        commit_names = self.get_commit_names(commit)
-        commit_has_name = self.does_commit_have_name(commit)
-        return self.tree.insert(parent_id, commit, commit_names, commit_has_name)
+        builder = CommitTreeBuilder(self.octopus_merge_base, self.repository_directory, self.branch_name_map, self)
+        self.tree = builder.build_commit_tree(self.local_branch_logs_to_merge_base)
