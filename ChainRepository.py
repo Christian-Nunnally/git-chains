@@ -7,9 +7,15 @@ from CommitTree import CommitTree
 from CommitTreeBuilder import CommitTreeBuilder
 from Logger import Logger
 
-
 class ChainRepository():
+    """ 
+    Calculates and stores the useful section of a repositories log in a tree.
+    
+    The useful section is defined as all of the commits that are ancesters of
+    the merge base between all of the local_branches_to_include.
+    """
     def __init__(self, repository_path, local_branches_to_include):
+        self.really_long_commit_chain_warning_limit = 500
         self.local_branches_to_include = local_branches_to_include
         self.repository_directory = repository_path[:-4]
         self.local_branch_logs_to_merge_base = []
@@ -65,12 +71,16 @@ class ChainRepository():
             self.local_branch_logs_to_merge_base.append(branch_log_to_octopus_merge_base)
 
     def generate_branch_log_to_octopus_merge_base(self, branch):
+        number_of_commits_walked = 0
         branch_log_to_octopus_merge_base = []
         for commit in self.walk_from_branch(branch.target):
+            number_of_commits_walked += 1
             if self.is_ancestor(commit.hex, self.octopus_merge_base):
                 branch_log_to_octopus_merge_base.append(commit)
                 if commit.hex == self.octopus_merge_base:
                     break
+            if number_of_commits_walked == self.really_long_commit_chain_warning_limit
+                self.logger.warning("%s commits have been traversed from %s and the merge base has not been found. Consider filtering this branch out." % (self.really_long_commit_chain_warning_limit, branch.name))
         return self.reverse(branch_log_to_octopus_merge_base)
 
     def reverse(self, collection):
