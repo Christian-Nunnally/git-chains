@@ -1,6 +1,7 @@
 import subprocess
 
 from CommitNode import CommitNode
+from Logger import Logger
 
 
 class CommitTree:
@@ -8,6 +9,7 @@ class CommitTree:
     nodes = {}
 
     def __init__(self, root_id, repository_directory):
+        self.logger = Logger(self)
         self.root_id = root_id
         self.repository_directory = repository_directory
 
@@ -40,12 +42,15 @@ class CommitTree:
         if self.are_the_same(root_nodes):
             self.root = root_nodes[-1]
             return
-        print("Error: Unable to find a single root to the commit tree.")
+        self.root = root_nodes[0]
+        self.logger.warning("Unable to find a single root to the commit tree.")
 
     def are_the_same(self, nodes):
         for node in nodes:
             if not nodes[0].commit.hex == node.commit.hex:
                 if not nodes[0].pretty_names[0] == node.pretty_names[0]:
+                    print(nodes[0].pretty_names[0])
+                    print(node.pretty_names[0])
                     return False
         return len(nodes) > 0
 
