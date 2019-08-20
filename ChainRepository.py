@@ -79,7 +79,7 @@ class ChainRepository():
                 branch_log_to_octopus_merge_base.append(commit)
                 if commit.hex == self.octopus_merge_base:
                     break
-            if number_of_commits_walked == self.really_long_commit_chain_warning_limit
+            if number_of_commits_walked == self.really_long_commit_chain_warning_limit:
                 self.logger.warning("%s commits have been traversed from %s and the merge base has not been found. Consider filtering this branch out." % (self.really_long_commit_chain_warning_limit, branch.name))
         return self.reverse(branch_log_to_octopus_merge_base)
 
