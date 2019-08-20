@@ -17,8 +17,9 @@ class GitRepositoryCopier:
 
     def write_copy_script(self, script_file_path, extra_commands):
         with open(script_file_path, "x") as script_file:
-            scriptWriter = CommitTreeToScriptConverter(self.skip_single_child_nodes)
-            scriptWriter.convert_commit_tree_to_script(self.tree, script_file, extra_commands)
+            script_writer = CommitTreeToScriptConverter(self.skip_single_child_nodes, extra_commands, script_file)
+            script_writer.convert_commit_tree_to_script(self.tree)
+            script_writer.script_file = None
 
     def execute_script(self, script_file_path):
         executer = PowerShellScriptExecuter()
