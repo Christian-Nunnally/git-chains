@@ -10,7 +10,7 @@ class ChainHierarchyPrinter:
     HiddenParentIndicator = '◌'
 
     def __init__(self, chain_repository):
-        self.vertical_white_space_between_chains_off_master = True
+        self.vertical_white_space_between_chains_off_master = False
         self.show_nodes_with_one_child = False
         self.show_reference_nodes = True
         self.show_full_branch_names = False

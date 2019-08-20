@@ -31,7 +31,8 @@ class CommitTree:
         args = ['git', 'branch', '--merged', hex]
         process = subprocess.run(args, stdout=subprocess.PIPE, cwd=self.repository_directory)
         merged_branches = process.stdout.decode('utf-8').split()
-        merged_branches.remove("*")
+        if "*" in merged_branches:
+            merged_branches.remove("*")
         return merged_branches
 
     def find_root(self):
