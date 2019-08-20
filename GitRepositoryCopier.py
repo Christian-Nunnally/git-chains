@@ -1,5 +1,5 @@
 from CommitTreeToScriptConverter import CommitTreeToScriptConverter
-from PowerShellScriptExecuter import PowerShellScriptExecuter
+from Interoperability.PowerShellScriptExecuter import PowerShellScriptExecuter
 
 
 class GitRepositoryCopier:

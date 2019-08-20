@@ -1,4 +1,3 @@
-import sys
 import os
 import argparse
 import colorama
@@ -20,7 +19,7 @@ def __main__():
         local_repo_name = os.getcwd() + "\\.git"
 
     chain_repo = ChainRepository(local_repo_name, args.branches_to_include)
-    printer = ChainHierarchyPrinter(chain_repo)
+    printer = ChainHierarchyPrinter(chain_repo.tree, chain_repo.head_name)
     printer.print()
 
 __main__()

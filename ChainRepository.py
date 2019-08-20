@@ -1,10 +1,7 @@
-import subprocess
-
 import pygit2
 
-from CommitNode import CommitNode
-from CommitTree import CommitTree
 from CommitTreeBuilder import CommitTreeBuilder
+from Interoperability.ShellCommandExecuter import ShellCommandExecuter
 from Logger import Logger
 
 class ChainRepository():
@@ -25,11 +22,13 @@ class ChainRepository():
         self.branch_name_map = {}
         self.logger = Logger(self)
         self.tree = None
+        self.repository = None
+        self.head_name = ""
         self.initialize()
 
     def initialize(self):
         self.logger.log("Loading repository")
-        self.repository = pygit2.Repository(self.repository_directory + "/.git")
+        self.initialize_repository()
         self.logger.log("Initializing branches")
         self.initialize_branches()
         self.logger.log("Calculating octopus merge base")
@@ -38,6 +37,10 @@ class ChainRepository():
         self.generate_local_branch_logs_to_merge_base()
         self.logger.log("Building tree from local branch logs")
         self.build_commit_tree()
+
+    def initialize_repository(self):
+        self.repository = pygit2.Repository(self.repository_directory + "/.git")
+        self.head_name = self.repository.head.name.split('/')[-1]
 
     def initialize_branches(self):
         for branch_name in self.repository.branches.local:
@@ -61,8 +64,8 @@ class ChainRepository():
 
     def calculate_octopus_merge_base(self):
         args = ['git', 'merge-base', '--octopus'] + self.local_branch_names
-        process = subprocess.run(args, stdout=subprocess.PIPE, cwd=self.repository_directory)
-        self.octopus_merge_base = process.stdout.decode('utf-8').strip()
+        executer = ShellCommandExecuter(self.repository_directory, args)
+        self.octopus_merge_base = executer.execute_for_output()
 
     def generate_local_branch_logs_to_merge_base(self):
         for branch in self.local_branches:
@@ -92,8 +95,8 @@ class ChainRepository():
 
     def is_ancestor(self, commit, possible_ancestor):
         args = ['git', 'merge-base', '--is-ancestor', possible_ancestor, commit]
-        return_value = subprocess.call(args, cwd=self.repository_directory)
-        return not return_value
+        executer = ShellCommandExecuter(self.repository_directory, args)
+        return not executer.execute_for_return_code()
 
     def populate_branch_name_map(self):
         for branch in self.local_branches:

@@ -28,7 +28,7 @@ def __main__():
 
     print("\n\nCurrent state:")
     chain_repo = ChainRepository(local_repo_name, local_branches_to_include)
-    printer = ChainHierarchyPrinter(chain_repo)
+    printer = ChainHierarchyPrinter(chain_repo.tree, chain_repo.head_name)
     printer.print()
     
     command = "git " + ' '.join(unknown_args)

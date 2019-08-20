@@ -9,8 +9,7 @@ class ChainHierarchyPrinter:
     CommitIndicator = '●'
     HiddenParentIndicator = '◌'
 
-    def __init__(self, chain_repository):
-        self.vertical_white_space_between_chains_off_master = False
+    def __init__(self, tree, current_branch_name):
         self.show_nodes_with_one_child = False
         self.show_reference_nodes = True
         self.show_full_branch_names = False
@@ -19,9 +18,8 @@ class ChainHierarchyPrinter:
         self.max_excluded_parents_represented = 6
         self.commit_style = ChainHierarchyPrinter.CommitIndicator
         self.parent_style = ChainHierarchyPrinter.HiddenParentIndicator
-
-        self.tree = chain_repository.tree
-        self.repository = chain_repository.repository
+        self.current_branch_name = current_branch_name
+        self.tree = tree
         self.text_list = []
 
     def print(self):
@@ -62,11 +60,9 @@ class ChainHierarchyPrinter:
                 child = child.children[0]
                 excluded_parent_count += 1
             self.build_text_list_recursively(child, left_spaces + 3 + len(excluded_parent_dots), excluded_parent_count, parent_branch_names)
-        self.add_vertical_whitespace_if_needed()
 
     def build_basic_string_node_representation(self, node, left_spaces, excluded_parent_dots):
-        current_branch_name = self.repository.head.name.split('/')[-1]
-        color = NodeColor(node, current_branch_name)
+        color = NodeColor(node, self.current_branch_name)
         colored_node_name = color.name_color + self.get_formatted_node_name(node)
         commit_dot = color.status_color + self.commit_style + color.reset
         formatted_excluded_parents_dots = color.omitted_parent + excluded_parent_dots + color.reset
@@ -109,11 +105,6 @@ class ChainHierarchyPrinter:
         if (not self.show_full_branch_names):
             return os.path.basename(name)
         return name
-
-    def add_vertical_whitespace_if_needed(self):
-        if (self.vertical_white_space_between_chains_off_master):
-            if (len(self.text_list) > 0 and not len(self.text_list[-1]) == 0):
-                self.text_list.append('')
 
     def decorate_text_list(self):
         self.add_header_to_text_list()

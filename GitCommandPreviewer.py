@@ -26,7 +26,7 @@ class GitCommandPreviewer:
 
     def run_git_chains_on_repository(self, repo_path):
         preview_repo = ChainRepository(repo_path, self.local_branches_to_include)
-        preview_printer = ChainHierarchyPrinter(preview_repo)
+        preview_printer = ChainHierarchyPrinter(preview_repo.tree, preview_repo.head_name)
         preview_printer.print()
 
     def make_writeable_recursive(self, path):

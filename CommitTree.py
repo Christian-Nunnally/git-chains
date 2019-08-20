@@ -1,6 +1,4 @@
-import subprocess
-
-from CommitNode import CommitNode
+from Interoperability.ShellCommandExecuter import ShellCommandExecuter
 from Logger import Logger
 
 
@@ -31,8 +29,8 @@ class CommitTree:
 
     def get_merged_branch_names(self, hex):
         args = ['git', 'branch', '--merged', hex]
-        process = subprocess.run(args, stdout=subprocess.PIPE, cwd=self.repository_directory)
-        merged_branches = process.stdout.decode('utf-8').split()
+        executer = ShellCommandExecuter(self.repository_directory, args)
+        merged_branches = executer.execute_for_output().split()
         if "*" in merged_branches:
             merged_branches.remove("*")
         return merged_branches
