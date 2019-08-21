@@ -2,6 +2,7 @@ import pygit2
 
 from CommitTreeBuilder import CommitTreeBuilder
 from Interoperability.ShellCommandExecuter import ShellCommandExecuter
+from GitRepositoryWalker import GitRepositoryWalker
 from Logger import Logger
 
 class ChainRepository():
@@ -76,14 +77,23 @@ class ChainRepository():
     def generate_branch_log_to_octopus_merge_base(self, branch):
         number_of_commits_walked = 0
         branch_log_to_octopus_merge_base = []
-        for commit in self.walk_from_branch(branch.target):
-            number_of_commits_walked += 1
-            if self.is_ancestor(commit.hex, self.octopus_merge_base):
-                branch_log_to_octopus_merge_base.append(commit)
-                if commit.hex == self.octopus_merge_base:
-                    break
-            if number_of_commits_walked == self.really_long_commit_chain_warning_limit:
-                self.logger.warning("%s commits have been traversed from %s and the merge base has not been found. Consider filtering this branch out." % (self.really_long_commit_chain_warning_limit, branch.name))
+        start_commit = self.repository.get(branch.target)
+
+        walker = GitRepositoryWalker(self.repository_directory)
+        for commit in walker.walk(start_commit, self.octopus_merge_base):
+            print(commit.id)
+            print(self.octopus_merge_base)
+            branch_log_to_octopus_merge_base.append(commit)
+
+        # for commit in self.walk_from_branch(branch.target):
+        #     number_of_commits_walked += 1
+        #     if self.is_ancestor(commit.hex, self.octopus_merge_base):
+        #         branch_log_to_octopus_merge_base.append(commit)
+        #         if commit.hex == self.octopus_merge_base:
+        #             break
+        #     if number_of_commits_walked == self.really_long_commit_chain_warning_limit:
+        #        self.logger.warning("%s commits have been traversed from %s and the merge base has not been found. Consider filtering this branch out." % (self.really_long_commit_chain_warning_limit, branch.name))
+        return branch_log_to_octopus_merge_base
         return self.reverse(branch_log_to_octopus_merge_base)
 
     def reverse(self, collection):

@@ -27,7 +27,10 @@ class CommitTreeBuilder:
     def are_valid_commit_branches(self, commit_branches_to_build_tree):
         if len(commit_branches_to_build_tree) == 0 or len(commit_branches_to_build_tree[0]) == 0:
             return False
-        return commit_branches_to_build_tree[0][0].hex == self.root_commit_id
+        if not commit_branches_to_build_tree[0][0].hex == self.root_commit_id:
+            print("ohno")
+            return False
+        return True
     
     def insert_commit_into_tree(self, tree, commit, parent_id):
         commit_names = self.get_commit_names(commit)
