@@ -5,6 +5,8 @@ from ChainRepository import ChainRepository
 from ChainHierarchyPrinter import ChainHierarchyPrinter
 from colorama import *
 from GitCommandPreviewer import GitCommandPreviewer
+from pygit2 import Repository
+from BranchFilters.BranchFilterer import BranchFilterer
 
 def __main__():
     init(autoreset=True)
@@ -16,18 +18,19 @@ def __main__():
 
     args, unknown_args = parser.parse_known_args()
 
-    local_repo_name = "C:\ASW\.git"
-    if args.repo:
-        local_repo_name = args.repo
-    elif os.path.exists("./.git"):
-        local_repo_name = os.getcwd() + "\\.git"
+    if not os.path.exists("./.git"):
+        print("Must run inside a repository")
+        return
+    repo_name = os.getcwd() + "\\.git"
 
     local_branches_to_include = []
     if args.reduce:
         local_branches_to_include = unknown_args
 
     print("\n\nCurrent state:")
-    chain_repo = ChainRepository(local_repo_name, local_branches_to_include)
+    repository = Repository(repo_name)
+    branch_filterer = BranchFilterer()
+    chain_repo = ChainRepository(repository, branch_filterer)
     printer = ChainHierarchyPrinter(chain_repo.tree, chain_repo.head_name)
     printer.print()
     

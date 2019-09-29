@@ -1,19 +1,31 @@
 from BranchFilters.BranchFilterer import BranchFilterer
 from Interoperability.ShellCommandExecuter import ShellCommandExecuter
 from RepositoryWalkers.BranchToCommitWalker import BranchToCommitWalker
+from Logger import Logger
 
 class HeadToMasterBranchFilterer(BranchFilterer):
     def __init__(self, repository):
+        self.logger = Logger(self)
         self.repository = repository
         self.repository_directory = repr(repository).split('\'')[1][:-4]
         self.head_branch_name = self.repository.head.name[11:]
-        self.log_from_head_to_merge_base = self.get_log_from_head_to_merge_base()
+        self.generate_log_from_head_to_merge_base()
 
-    def get_log_from_head_to_merge_base(self):
+    def generate_log_from_head_to_merge_base(self):
+        self.logger.log("Determining commit ids between the current head and master:")
+        self.log_from_head_to_merge_base = []
+        self.logger.log("v head v")
+        for id in self.walk_log_from_head_to_merge_base():
+            self.log_from_head_to_merge_base.append(id)
+            self.logger.log(id)
+        self.logger.log("^ master ^")        
+
+    def walk_log_from_head_to_merge_base(self):
         head_master_merge_base = self.get_merge_base("master", self.head_branch_name)
         walker = BranchToCommitWalker(self.repository, head_master_merge_base)
         head_branch = self.repository.branches[self.head_branch_name]
-        return [c.hex for c in walker.walk(head_branch)]
+        for commit in walker.walk(head_branch):
+            yield commit.hex
 
     def get_merge_base(self, branch_name, other_branch_name):
         args = ['git', 'merge-base', branch_name, other_branch_name]
