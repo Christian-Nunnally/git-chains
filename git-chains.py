@@ -1,24 +1,31 @@
 import os
 import argparse
 import colorama
+from pygit2 import Repository
 from ChainRepository import ChainRepository
 from ChainHierarchyPrinter import ChainHierarchyPrinter
+from BranchFilters.HeadToMasterBranchFilterer import HeadToMasterBranchFilterer
+from BranchFilters.BranchFilterer import BranchFilterer
 
 def __main__():
     colorama.init(autoreset=True)
 
     parser = argparse.ArgumentParser()
     parser.add_argument('branches_to_include', type=str, nargs='*', help='The branches you want to include in the map')
-    parser.add_argument("-r", "--repo", help="Set the location for the local repo", type=str)
     args = parser.parse_args()
-        
-    local_repo_name = r"C:\ASW\.git"
-    if args.repo:
-        local_repo_name = args.repo
-    elif os.path.exists("./.git"):
-        local_repo_name = os.getcwd() + "\\.git"
 
-    chain_repo = ChainRepository(local_repo_name, args.branches_to_include)
+    if not os.path.exists("./.git"):
+        print("Must run inside a repository")
+        return
+    repo_name = os.getcwd() + "\\.git"
+
+    repository = Repository(repo_name)
+    branch_filterer = None
+    if "all" in args.branches_to_include:
+        branch_filterer = BranchFilterer()
+    else:
+        branch_filterer = HeadToMasterBranchFilterer(repository)
+    chain_repo = ChainRepository(repository, branch_filterer)
     printer = ChainHierarchyPrinter(chain_repo.tree, chain_repo.head_name)
     printer.print()
 
