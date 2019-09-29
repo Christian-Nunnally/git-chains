@@ -9,8 +9,4 @@ class Logger:
 
     def log(self, message):
         if (Logger.enable_logging):
-            print("\r" + self.owning_class_name + " - " + message)
-
-    def progress(self, progress):
-        print("\r", end="")
-        print(progress, end="")
+            print(self.owning_class_name + " - " + message)
