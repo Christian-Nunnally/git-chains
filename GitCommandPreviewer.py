@@ -2,13 +2,13 @@ import os
 import stat
 import tempfile
 
+from pygit2 import Repository
 from ChainHierarchyPrinter import ChainHierarchyPrinter
 from ChainRepository import ChainRepository
 from GitRepositoryCopier import GitRepositoryCopier
 
 
 class GitCommandPreviewer:
-
     def __init__(self, repo, skip_single_child_nodes, local_branches_to_include = []):
         self.repo = repo
         self.skip_single_child_nodes = skip_single_child_nodes
@@ -17,7 +17,8 @@ class GitCommandPreviewer:
     def preview_commands(self, commands):
         with tempfile.TemporaryDirectory() as temp_dir:
             self.create_skeleton_repository_from_tree(temp_dir, commands)
-            self.run_git_chains_on_repository(temp_dir + "\\.git")
+            temp_repository = Repository(temp_dir + "\\.git")
+            self.run_git_chains_on_repository(temp_repository)
             self.make_writeable_recursive(temp_dir)
 
     def create_skeleton_repository_from_tree(self, temp_dir, commands):

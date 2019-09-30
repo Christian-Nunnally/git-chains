@@ -3,14 +3,12 @@ import os
 import argparse
 from ChainRepository import ChainRepository
 from ChainHierarchyPrinter import ChainHierarchyPrinter
-from colorama import *
 from GitCommandPreviewer import GitCommandPreviewer
 from pygit2 import Repository
 from BranchFilters.BranchFilterer import BranchFilterer
+from LegendPrinter import LegendPrinter
 
 def __main__():
-    init(autoreset=True)
-
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument("-f", "--full", help="Replay all commits during preview", action="store_true")
     parser.add_argument("-d", "--repo", help="Set the location for the local repo", type=str)
@@ -27,6 +25,7 @@ def __main__():
     if args.reduce:
         local_branches_to_include = unknown_args
 
+    LegendPrinter().print_legend()
     print("\n\nCurrent state:")
     repository = Repository(repo_name)
     branch_filterer = BranchFilterer()
@@ -39,7 +38,7 @@ def __main__():
     current_branch = chain_repo.repository.head.name.split('/')[-1]
     commands = ["git checkout " + current_branch, command, "git branch"]
 
-    previewer = GitCommandPreviewer(chain_repo, not args.full, local_branches_to_include)
+    previewer = GitCommandPreviewer(chain_repo, not args.full, branch_filterer)
     previewer.preview_commands(commands)
 
 __main__()

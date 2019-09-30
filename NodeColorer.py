@@ -30,4 +30,4 @@ class NodeColorer:
         return NodeColorer.UpToDateStatusColor + status + Fore.RESET
 
     def color_excluded_parents(self, excluded_parents):
-        return NodeColorer.DefaultNodeColor + Style.BRIGHT + excluded_parents + Fore.RESET
+        return NodeColorer.GrayedNodeColor + excluded_parents + Fore.RESET

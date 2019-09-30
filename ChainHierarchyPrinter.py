@@ -1,6 +1,4 @@
-import os
 from NodeColorer import NodeColorer
-
 
 class ChainHierarchyPrinter:
     CommitIndicator = '●'
@@ -9,13 +7,9 @@ class ChainHierarchyPrinter:
     def __init__(self, tree, current_branch_name):
         self.colorer = NodeColorer()
         self.show_nodes_with_one_child = False
-        self.show_reference_nodes = True
         self.show_full_branch_names = False
         self.show_nodes_with_names = True
-        self.show_more_excluded_parent_dots = True
         self.max_excluded_parents_represented = 6
-        self.commit_style = ChainHierarchyPrinter.CommitIndicator
-        self.parent_style = ChainHierarchyPrinter.HiddenParentIndicator
         self.current_branch_name = current_branch_name
         self.tree = tree
         self.text_list = []
@@ -43,7 +37,7 @@ class ChainHierarchyPrinter:
             parent_branch_names.append(merged_branch_name)
             formatted_node_name = self.get_formatted_name(merged_branch_name)
             colored_node_name = self.colorer.color_name(formatted_node_name, True, False, True)
-            colored_commit_dot = self.colorer.color_name(self.commit_style, True, False, True)
+            colored_commit_dot = self.colorer.color_name(ChainHierarchyPrinter.CommitIndicator, True, False, True)
             line = "%s└%s─┐ %s" % (' ' * left_spaces, colored_commit_dot, colored_node_name)
             self.text_list.append(line)
             left_spaces += 3
@@ -61,18 +55,15 @@ class ChainHierarchyPrinter:
             self.build_text_list_recursively(child, left_spaces + 3 + len(excluded_parent_dots), excluded_parent_count, parent_branch_names)
 
     def build_basic_string_node_representation(self, node, left_spaces, excluded_parent_dots):
-        colored_node_name = self.get_colored_node_name(node, False)
-        commit_dot = self.colorer.color_status(self.commit_style)
+        formatted_node_name = self.get_formatted_node_name(node)
+        has_name = node.has_name
+        is_checked_out = self.current_branch_name in node.pretty_names
+        colored_node_name = self.colorer.color_name(formatted_node_name, has_name, is_checked_out, False)
+        commit_dot = self.colorer.color_name(ChainHierarchyPrinter.CommitIndicator, has_name, is_checked_out, False)
         formatted_excluded_parents_dots = self.colorer.color_excluded_parents(excluded_parent_dots)
         has_children_symbol = self.get_has_children_symbol(node)
         line = "%s└%s%s%s %s" % (' ' * left_spaces, formatted_excluded_parents_dots, commit_dot, has_children_symbol, colored_node_name)
         return line
-
-    def get_colored_node_name(self, node, should_gray):
-        formatted_node_name = self.get_formatted_node_name(node)
-        has_name = node.has_name
-        is_checked_out = self.current_branch_name in node.pretty_names
-        return self.colorer.color_name(formatted_node_name, has_name, is_checked_out, False)
 
     def get_has_children_symbol(self, node):
         if len(node.children) > 0:
@@ -80,14 +71,13 @@ class ChainHierarchyPrinter:
         return ""
 
     def get_excluded_parent_dots(self, excluded_parent_count):
+        hidden_parent = ChainHierarchyPrinter.HiddenParentIndicator
         if (excluded_parent_count <= 0):
             return ""
-        if (not self.show_more_excluded_parent_dots):
-            return self.parent_style
         if (excluded_parent_count < self.max_excluded_parents_represented):
-            return self.parent_style * excluded_parent_count
+            return hidden_parent * excluded_parent_count
         else:
-            return self.parent_style * 1 + "·"+ str(excluded_parent_count - 2) +"·" + self.parent_style * 1
+            return "%s.%s.%s" % (hidden_parent, excluded_parent_count - 2, hidden_parent)
 
     def should_skip_over_node(self, node):
         if ("master" in node.pretty_names): 
@@ -107,7 +97,8 @@ class ChainHierarchyPrinter:
 
     def get_formatted_name(self, name):
         if (not self.show_full_branch_names):
-            return os.path.basename(name)
+            if len(name.split('/')) > 0:
+                return name.split('/')[-1]
         return name
 
     def decorate_text_list(self):
