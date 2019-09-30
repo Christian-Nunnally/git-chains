@@ -33,6 +33,8 @@ class CommitTree:
         merged_branches = executer.execute_for_output().split()
         if "*" in merged_branches:
             merged_branches.remove("*")
+        while "+" in merged_branches:
+            merged_branches.remove("+")
         return merged_branches
 
     def find_root(self):
