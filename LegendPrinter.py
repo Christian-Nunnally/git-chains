@@ -9,4 +9,4 @@ class LegendPrinter:
         print(colorer.color_name("●     commit", False, False, False))
         print(colorer.color_name("●     branch", True, False, False))
         print(colorer.color_name("●     current-head", True, True, False))
-        print(colorer.color_name("●     merged-branch", False, False, True))
+        print(colorer.color_name("●     merged-branch", False, False, True)) 
