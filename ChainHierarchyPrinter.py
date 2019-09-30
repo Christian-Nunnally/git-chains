@@ -1,8 +1,5 @@
 import os
-
-from colorama import Fore
-
-from NodeColor import NodeColor
+from NodeColorer import NodeColorer
 
 
 class ChainHierarchyPrinter:
@@ -10,6 +7,7 @@ class ChainHierarchyPrinter:
     HiddenParentIndicator = '◌'
 
     def __init__(self, tree, current_branch_name):
+        self.colorer = NodeColorer()
         self.show_nodes_with_one_child = False
         self.show_reference_nodes = True
         self.show_full_branch_names = False
@@ -43,9 +41,10 @@ class ChainHierarchyPrinter:
             if (merged_branch_name in node.pretty_names or merged_branch_name in parent_branch_names):
                 continue
             parent_branch_names.append(merged_branch_name)
-            colored_node_name = Fore.LIGHTBLACK_EX + self.get_formatted_name(merged_branch_name)
-            commit_dot = Fore.LIGHTBLACK_EX + self.commit_style + Fore.RESET
-            line = "%s└%s─┐ %s" % (' ' * left_spaces, commit_dot, colored_node_name)
+            formatted_node_name = self.get_formatted_name(merged_branch_name)
+            colored_node_name = self.colorer.color_name(formatted_node_name, True, False, True)
+            colored_commit_dot = self.colorer.color_name(self.commit_style, True, False, True)
+            line = "%s└%s─┐ %s" % (' ' * left_spaces, colored_commit_dot, colored_node_name)
             self.text_list.append(line)
             left_spaces += 3
 
@@ -62,13 +61,18 @@ class ChainHierarchyPrinter:
             self.build_text_list_recursively(child, left_spaces + 3 + len(excluded_parent_dots), excluded_parent_count, parent_branch_names)
 
     def build_basic_string_node_representation(self, node, left_spaces, excluded_parent_dots):
-        color = NodeColor(node, self.current_branch_name)
-        colored_node_name = color.name_color + self.get_formatted_node_name(node)
-        commit_dot = color.status_color + self.commit_style + color.reset
-        formatted_excluded_parents_dots = color.omitted_parent + excluded_parent_dots + color.reset
+        colored_node_name = self.get_colored_node_name(node, False)
+        commit_dot = self.colorer.color_status(self.commit_style)
+        formatted_excluded_parents_dots = self.colorer.color_excluded_parents(excluded_parent_dots)
         has_children_symbol = self.get_has_children_symbol(node)
         line = "%s└%s%s%s %s" % (' ' * left_spaces, formatted_excluded_parents_dots, commit_dot, has_children_symbol, colored_node_name)
         return line
+
+    def get_colored_node_name(self, node, should_gray):
+        formatted_node_name = self.get_formatted_node_name(node)
+        has_name = node.has_name
+        is_checked_out = self.current_branch_name in node.pretty_names
+        return self.colorer.color_name(formatted_node_name, has_name, is_checked_out, False)
 
     def get_has_children_symbol(self, node):
         if len(node.children) > 0:
