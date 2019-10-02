@@ -6,39 +6,37 @@ from ChainHierarchyPrinter import ChainHierarchyPrinter
 from GitCommandPreviewer import GitCommandPreviewer
 from pygit2 import Repository
 from BranchFilters.BranchFilterer import BranchFilterer
+from BranchFilters.BasicBranchFilterer import BasicBranchFilterer
 from LegendPrinter import LegendPrinter
 
 def __main__():
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument("-f", "--full", help="Replay all commits during preview", action="store_true")
-    parser.add_argument("-d", "--repo", help="Set the location for the local repo", type=str)
     parser.add_argument("-r", "--reduce", help="Filter to only the branches in the command", action="store_true")
 
     args, unknown_args = parser.parse_known_args()
+    command = "git " + ' '.join(unknown_args)
 
-    if not os.path.exists("./.git"):
-        print("Must run inside a repository")
-        return
+    validate()
     repo_name = os.getcwd() + "\\.git"
 
-    local_branches_to_include = []
-    if args.reduce:
-        local_branches_to_include = unknown_args
-
-    LegendPrinter().print_legend()
-    print("\n\nCurrent state:")
-    repository = Repository(repo_name)
     branch_filterer = BranchFilterer()
-    chain_repo = ChainRepository(repository, branch_filterer)
-    printer = ChainHierarchyPrinter(chain_repo.tree, chain_repo.head_name)
-    printer.print()
-    
-    command = "git " + ' '.join(unknown_args)
-    print("\nAfter `%s`:" % command)
-    current_branch = chain_repo.repository.head.name.split('/')[-1]
-    commands = ["git checkout " + current_branch, command, "git branch"]
+    if args.reduce:
+        branch_filterer = BasicBranchFilterer(unknown_args)
 
-    previewer = GitCommandPreviewer(chain_repo, not args.full, branch_filterer)
-    previewer.preview_commands(commands)
+    repository = Repository(repo_name)
+    chain_repo = ChainRepository(repository, branch_filterer)
+    commands = ["git checkout " + chain_repo.head_name, command]
+    
+    LegendPrinter().print_legend()
+    print("\nBefore `%s`" % command)
+    ChainHierarchyPrinter(chain_repo.tree, chain_repo.head_name).print()
+    print("\nAfter `%s`" % command)
+    GitCommandPreviewer(chain_repo, not args.full, branch_filterer).preview_commands(commands)
+    print()
+
+def validate():
+    if not os.path.exists("./.git"):
+        print("Must be run inside a repository")
 
 __main__()

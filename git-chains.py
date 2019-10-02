@@ -21,6 +21,7 @@ def __main__():
     printer = ChainHierarchyPrinter(chain_repo.tree, chain_repo.head_name)
     LegendPrinter().print_legend()
     printer.print()
+    print()
 
 def get_repo_name():
     if not os.path.exists("./.git"):
