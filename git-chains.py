@@ -8,6 +8,7 @@ from BranchFilters.HeadToMasterBranchFilterer import HeadToMasterBranchFilterer
 from BranchFilters.BranchFilterer import BranchFilterer
 from BranchFilters.BasicBranchFilterer import BasicBranchFilterer
 from LegendPrinter import LegendPrinter
+from DotFilePrinter import DotFilePrinter
 
 def __main__():
     colorama.init(autoreset=True)
@@ -19,6 +20,7 @@ def __main__():
     branch_filterer = get_branch_filterer(repository, args.branches_to_include)
     chain_repo = ChainRepository(repository, branch_filterer)
     printer = ChainHierarchyPrinter(chain_repo.tree, chain_repo.head_name)
+    DotFilePrinter().write_dot_file(chain_repo)
     LegendPrinter().print_legend()
     printer.print()
     print()
