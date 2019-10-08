@@ -8,19 +8,22 @@ from BranchFilters.HeadToMasterBranchFilterer import HeadToMasterBranchFilterer
 from BranchFilters.BranchFilterer import BranchFilterer
 from BranchFilters.BasicBranchFilterer import BasicBranchFilterer
 from LegendPrinter import LegendPrinter
-from DotFilePrinter import DotFilePrinter
+from DigraphWrapper import DigraphWrapper
 
 def __main__():
     colorama.init(autoreset=True)
     parser = argparse.ArgumentParser()
     parser.add_argument('branches_to_include', type=str, nargs='*', help='The branches you want to include in the map')
+    parser.add_argument("-r", "--render", help="generate png of repo", action="store_true")
     args = parser.parse_args()
     repo_name = get_repo_name()
     repository = Repository(repo_name)
     branch_filterer = get_branch_filterer(repository, args.branches_to_include)
     chain_repo = ChainRepository(repository, branch_filterer)
     printer = ChainHierarchyPrinter(chain_repo.tree, chain_repo.head_name)
-    DotFilePrinter().write_dot_file(chain_repo)
+    if (args.render):
+        digraph = DigraphWrapper(chain_repo.tree.root)
+        print(str(digraph))
     LegendPrinter().print_legend()
     printer.print()
     print()
