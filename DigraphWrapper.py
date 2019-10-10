@@ -18,7 +18,7 @@ class DigraphWrapper:
             return
 
         current_node_name = str(current_node.name).split('/')[-1]
-        current_node_pretty_name = ' - '.join(self.strip_directories_from_branch_names(current_node.pretty_names))
+        current_node_pretty_name = ' - '.join(self.clean_branch_name_for_labels(current_node.pretty_names))
         
         color = self.pick_node_color(current_node)
         shape = self.pick_node_shape(current_node)
@@ -29,7 +29,7 @@ class DigraphWrapper:
 
         if self.include_merged_branches:
             if len(current_node.merged_branch_names) > 1:
-                simple_branch_names = self.strip_directories_from_branch_names(current_node.merged_branch_names[1:])
+                simple_branch_names = self.clean_branch_name_for_labels(current_node.merged_branch_names[1:])
                 self.add_list_of_ancestor_nodes(current_node_name, simple_branch_names, current_node_name)
 
         if parent_node:
@@ -51,11 +51,21 @@ class DigraphWrapper:
         self.digraph.edge(parent_name, child)
         self.add_list_of_ancestor_nodes(parent_name, ancestors[1:], node_uniquifier)
 
+    def clean_branch_name_for_labels(self, branch_names):
+        branch_names = self.strip_directories_from_branch_names(branch_names)
+        return self.replace_dash_with_newline(branch_names)
+
     def strip_directories_from_branch_names(self, branch_names):
         stripped_names = []
         for name in branch_names:
             stripped_names.append(name.split('/')[-1])
         return stripped_names
+
+    def replace_dash_with_newline(self, branch_names):
+        replaced_names = []
+        for name in branch_names:
+            replaced_names.append(name.replace('-', '\n'))
+        return replaced_names
 
     def add_node(self, name, label, color, shape, width):
         self.digraph.node(name, label, shape=shape, style='filled', color=color, fontname="consolas", width=width)
