@@ -18,7 +18,7 @@ class ChainRepository():
         self.repository_directory = repr(repository).split('\'')[1][:-4]
         self.local_branch_logs_to_merge_base = []
         self.local_feature_branches = []
-        self.local_branch_names = []
+        self.local_branch_names = [] 
         self.local_branches = []
         self.branch_name_map = {}
         self.logger = Logger(self)
