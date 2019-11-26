@@ -8,14 +8,11 @@ class BranchToCommitWalker(RepositoryWalker):
         super().__init__(repository)
 
     def walk(self, branch):
-        print("Starting walk")
         for commit in super().walk(branch):
-            #if self.is_ancestor(commit.hex, self.commit_to_stop_at):
+            # if self.is_ancestor(commit.hex, self.commit_to_stop_at):
             yield commit
             if commit.hex == self.commit_to_stop_at:
-                print("Stopping walk")
                 return
-        print("Stopping walk...")
 
     def is_ancestor(self, commit, possible_ancestor):
         args = ['git', 'merge-base', '--is-ancestor', possible_ancestor, commit]
