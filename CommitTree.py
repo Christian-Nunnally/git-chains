@@ -1,7 +1,6 @@
 from Interoperability.ShellCommandExecuter import ShellCommandExecuter
 from Logger import Logger
 
-
 class CommitTree:
     root = None
     nodes = {}
@@ -25,7 +24,15 @@ class CommitTree:
 
     def populate_merged_branches(self, node):
         if node.has_name:
-            node.merged_branch_names = self.get_merged_branch_names(node.commit.hex)
+            branches_merged_into_parents = set(self.get_parents_merged_branches(node))
+            all_branches_merged_into_node = set(self.get_merged_branch_names(node.commit.hex))
+            print(all_branches_merged_into_node)
+            node.merged_branch_names = list(set(all_branches_merged_into_node - branches_merged_into_parents))
+        
+    def get_parents_merged_branches(self, node):
+        if (node.parent):
+            return node.parent.merged_branch_names + self.get_parents_merged_branches(node.parent)
+        return []
 
     def get_merged_branch_names(self, hex):
         args = ['git', 'branch', '--merged', hex]
