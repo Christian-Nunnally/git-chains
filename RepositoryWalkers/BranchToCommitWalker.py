@@ -15,7 +15,7 @@ class BranchToCommitWalker(RepositoryWalker):
             if commit.hex == self.commit_to_stop_at:
                 print("Stopping walk")
                 return
-        print("Stopping walk")
+        print("Stopping walk...")
 
     def is_ancestor(self, commit, possible_ancestor):
         args = ['git', 'merge-base', '--is-ancestor', possible_ancestor, commit]
