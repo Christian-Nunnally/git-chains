@@ -9,7 +9,6 @@ class BranchToCommitWalker(RepositoryWalker):
 
     def walk(self, branch):
         for commit in super().walk(branch):
-            # if self.is_ancestor(commit.hex, self.commit_to_stop_at):
             yield commit
             if commit.hex == self.commit_to_stop_at:
                 return
