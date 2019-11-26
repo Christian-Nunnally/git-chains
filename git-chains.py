@@ -9,13 +9,18 @@ from BranchFilters.BranchFilterer import BranchFilterer
 from BranchFilters.BasicBranchFilterer import BasicBranchFilterer
 from LegendPrinter import LegendPrinter
 from DigraphWrapper import DigraphWrapper
+from Logger import Logger
 
 def __main__():
     colorama.init(autoreset=True)
     parser = argparse.ArgumentParser()
     parser.add_argument('branches_to_include', type=str, nargs='*', help='The branches you want to include in the map')
     parser.add_argument("-r", "--render", help="generate png of repo", action="store_true")
+    parser.add_argument("-v", "--verbose", help="print logging information", action="store_true")
     args = parser.parse_args()
+
+    Logger.enable_logging = args.verbose
+
     repo_name = get_repo_name()
     repository = Repository(repo_name)
     branch_filterer = get_branch_filterer(repository, args.branches_to_include)

@@ -40,7 +40,11 @@ class ChainRepository():
     def initialize_branches(self):
         for branch_name in self.repository.branches.local:
             if self.branch_inclusion_filterer.should_include_branch(branch_name):
+                self.logger.log("Including: " + branch_name)
                 self.include_branch(branch_name)
+            else:
+                self.logger.log("Excluding: " + branch_name)
+        self.logger.log("Populating branch name map")
         self.populate_branch_name_map()
         self.validate_repository()
 

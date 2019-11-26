@@ -1,5 +1,5 @@
 class Logger:
-    enable_logging = False
+    enable_logging = True
 
     def __init__(self, owning_class):
         self.owning_class_name = type(owning_class).__name__
