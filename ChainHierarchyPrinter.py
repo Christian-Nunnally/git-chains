@@ -43,8 +43,6 @@ class ChainHierarchyPrinter:
             left_spaces += 3
 
         for node_name in node.pretty_names:
-            if (node_name == "73d51a4"):
-                print("Hello" + str(len(node.children)))
             parent_branch_names.append(node_name)
         line = self.build_basic_string_node_representation(node, left_spaces, excluded_parent_dots)
         self.text_list.append(line)

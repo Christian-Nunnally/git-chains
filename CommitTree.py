@@ -26,12 +26,11 @@ class CommitTree:
         if node.has_name:
             branches_merged_into_parents = set(self.get_parents_merged_branches(node))
             all_branches_merged_into_node = set(self.get_merged_branch_names(node.commit.hex))
-            print(all_branches_merged_into_node)
             node.merged_branch_names = list(set(all_branches_merged_into_node - branches_merged_into_parents))
         
     def get_parents_merged_branches(self, node):
         if (node.parent):
-            return node.parent.merged_branch_names + self.get_parents_merged_branches(node.parent)
+            return node.parent.merged_branch_names + self.get_parents_merged_branches(node.parent) + node.parent.pretty_names
         return []
 
     def get_merged_branch_names(self, hex):
@@ -56,8 +55,6 @@ class CommitTree:
         for node in nodes:
             if not nodes[0].commit.hex == node.commit.hex:
                 if not nodes[0].pretty_names[0] == node.pretty_names[0]:
-                    print(nodes[0].pretty_names[0])
-                    print(node.pretty_names[0])
                     return False
         return len(nodes) > 0
 

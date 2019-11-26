@@ -40,9 +40,6 @@ class DigraphWrapper:
     def add_list_of_ancestor_nodes(self, child, ancestors, node_uniquifier):
         if not any(ancestors):
             return
-        print(ancestors[0])
-        for n in self.included_names:
-            print("n: " + n)
         if ancestors[0] in self.included_names:
             self.add_list_of_ancestor_nodes(child, ancestors[1:], node_uniquifier)
             return
